@@ -96,6 +96,7 @@
             </div>
 
             <div class="gallery-grid" id="galleryGrid"></div>
+            <div class="pagination-container" id="paginationControls"></div>
         </div>
     </section>
 
@@ -179,6 +180,259 @@
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
+        const defaultOutfits = [
+            {
+                id: 1,
+                name: 'Elegant Navy Blue Senator Style',
+                category: 'men',
+                image: 'eyiwunmi_images/beautiful_2piece.jpeg',
+                price: '₦75,000',
+                oldPrice: '₦90,000',
+                description: 'A sharp, tailored navy blue Senator outfit featuring clean lines and a premium finish. Perfect for weddings, church service, or special ceremonies.',
+                colours: ['#1A2A3A', '#D4AF37'],
+                sizes: 'M, L, XL, 2XL',
+                fabric: 'Premium Cashmere Cotton',
+                availability: 'In Stock',
+                badge: 'new',
+                badgeText: 'New'
+            },
+            {
+                id: 2,
+                name: 'Classic Navy Two-Piece Suit',
+                category: 'men',
+                image: 'eyiwunmi_images/slay_with_style.jpeg',
+                price: '₦85,000',
+                oldPrice: '₦110,000',
+                description: 'A modern, slim-fit navy blue suit crafted from high-quality wool blend. Ideal for formal corporate engagements, business, and formal events.',
+                colours: ['#1B2E4A', '#FFFFFF'],
+                sizes: 'S, M, L, XL, 2XL',
+                fabric: 'Super 120s Wool Blend',
+                availability: 'In Stock',
+                badge: 'sale',
+                badgeText: 'Sale'
+            },
+            {
+                id: 3,
+                name: 'Peach Asoebi Lace Gown',
+                category: 'women',
+                image: 'eyiwunmi_images/luxury_outing_gown.png',
+                price: '₦110,000',
+                oldPrice: null,
+                description: 'An elegant peach lace native gown designed with intricate patterns and a matching gele. Perfect for brides, mothers of the day, and high-profile guests.',
+                colours: ['#F3A79E', '#EBC3B2'],
+                sizes: 'S, M, L, XL',
+                fabric: 'French Lace & Silk Lining',
+                availability: 'Made to Order',
+                badge: null,
+                badgeText: null
+            },
+            {
+                id: 4,
+                name: 'Kids Royal Agbada Set',
+                category: 'kids',
+                image: 'eyiwunmi_images/eyiwunmi_closet.jpg',
+                price: '₦48,000',
+                oldPrice: '₦58,000',
+                description: 'A beautiful miniature white and gold traditional agbada for your little prince. Crafted with soft, non-itchy materials for maximum comfort.',
+                colours: ['#FFFFFF', '#D4AF37'],
+                sizes: '2-4y, 4-6y, 6-8y, 8-10y',
+                fabric: 'Soft Cotton Brocade',
+                availability: 'In Stock',
+                badge: 'sale',
+                badgeText: 'Sale'
+            },
+            {
+                id: 5,
+                name: 'Luxury Green & Gold Lace Gown',
+                category: 'asoebi',
+                image: 'eyiwunmi_images/femae_classic_suit.png',
+                price: '₦150,000',
+                oldPrice: '₦180,000',
+                description: 'An exquisite statement green and gold lace gown with dramatic detailing. Crafted for prestigious celebrations where standing out is a must.',
+                colours: ['#1E4620', '#D4AF37'],
+                sizes: 'M, L, XL',
+                fabric: 'Premium Cord Lace & Satin',
+                availability: 'Made to Order',
+                badge: 'new',
+                badgeText: 'Luxury'
+            },
+            {
+                id: 6,
+                name: 'Charcoal Black Senator Style',
+                category: 'men',
+                image: 'eyiwunmi_images/nice_dress.jpeg',
+                price: '₦70,000',
+                oldPrice: null,
+                description: 'A clean and minimalist charcoal black Senator wear with subtle chest embroidery. Perfect for corporate-casual events and weekend outings.',
+                colours: ['#1F2937', '#6B7280'],
+                sizes: 'M, L, XL, 2XL',
+                fabric: 'Polish Cotton',
+                availability: 'In Stock',
+                badge: null,
+                badgeText: null
+            },
+            {
+                id: 7,
+                name: 'Beige Embroidered Kaftan',
+                category: 'men',
+                image: 'eyiwunmi_images/luxury_jumpsuit.jpeg',
+                price: '₦78,000',
+                oldPrice: '₦95,000',
+                description: 'A premium sand-beige kaftan set with intricate tone-on-tone chest embroidery. Breathable and comfortable for all-day wear.',
+                colours: ['#D2B48C', '#E6C280'],
+                sizes: 'M, L, XL, 2XL',
+                fabric: 'Soft Linen Cotton',
+                availability: 'In Stock',
+                badge: 'sale',
+                badgeText: 'Sale'
+            },
+            {
+                id: 8,
+                name: 'Classic Black Tuxedo',
+                category: 'men',
+                image: 'eyiwunmi_images/luxury_bubu_gown.jpeg',
+                price: '₦95,000',
+                oldPrice: '₦125,000',
+                description: 'A sharp, double-breasted black tuxedo with satin peak lapels. The absolute definition of formal elegance for weddings and black-tie galas.',
+                colours: ['#000000', '#FFFFFF'],
+                sizes: 'S, M, L, XL, 2XL',
+                fabric: 'Super 150s Merino Wool',
+                availability: 'In Stock',
+                badge: 'new',
+                badgeText: 'New'
+            },
+            {
+                id: 9,
+                name: 'Royal Blue Evening Gown',
+                category: 'women',
+                image: 'eyiwunmi_images/luxury_suit.jpeg',
+                price: '₦92,000',
+                oldPrice: null,
+                description: 'A breathtaking royal blue gown with draped waist detailing and a high slit. Designed to command attention at dinners and red carpets.',
+                colours: ['#0F52BA', '#FFFFFF'],
+                sizes: 'S, M, L, XL',
+                fabric: 'Stretch Crepe & Silk Satin',
+                availability: 'In Stock',
+                badge: null,
+                badgeText: null
+            },
+            {
+                id: 10,
+                name: 'Crimson & Black Patterned Dress',
+                category: 'women',
+                image: 'eyiwunmi_images/dinner_choice.jpeg',
+                price: '₦88,000',
+                oldPrice: '₦105,000',
+                description: 'A bold, abstract red and black patterned long gown with a modern wrap bodice. Perfect for high-fashion statements and cocktails.',
+                colours: ['#990000', '#000000'],
+                sizes: 'S, M, L, XL',
+                fabric: 'Premium Brocade Satin',
+                availability: 'In Stock',
+                badge: 'sale',
+                badgeText: 'Sale'
+            },
+            {
+                id: 11,
+                name: 'Sunset Yellow Asoebi Gown',
+                category: 'women',
+                image: 'eyiwunmi_images/beautiful_piece.jpeg',
+                price: '₦120,000',
+                oldPrice: '₦140,000',
+                description: 'A custom sunset yellow lace gown detailed with pink floral applique. A brilliant choice for spring and summer traditional occasions.',
+                colours: ['#FAD02C', '#F472B6'],
+                sizes: 'S, M, L, XL',
+                fabric: 'Hand-beaded Lace',
+                availability: 'Made to Order',
+                badge: 'new',
+                badgeText: 'Trending'
+            },
+            {
+                id: 12,
+                name: 'Golden Gele Asoebi Set',
+                category: 'asoebi',
+                image: 'eyiwunmi_images/comfortable_bub.jpeg',
+                price: '₦125,000',
+                oldPrice: null,
+                description: 'A complete traditional set featuring a yellow lace gown and premium metallic gold gele. Tailored to absolute perfection.',
+                colours: ['#E6C280', '#D4AF37'],
+                sizes: 'M, L, XL, 2XL',
+                fabric: 'French Tulle & Organdie',
+                availability: 'Made to Order',
+                badge: null,
+                badgeText: null
+            },
+            {
+                id: 13,
+                name: 'Royal Blue Couple Asoebi Set',
+                category: 'asoebi',
+                image: 'eyiwunmi_images/luxury_materials.png',
+                price: '₦195,000',
+                oldPrice: '₦230,000',
+                description: 'A matching royal blue native wear package for couples. Includes a tailored senator/agbada style and a beautiful custom lady’s gown.',
+                colours: ['#0B3C5D', '#328CC1'],
+                sizes: 'Custom Fit',
+                fabric: 'Premium Senator Fabric & Cord Lace',
+                availability: 'Made to Order',
+                badge: 'new',
+                badgeText: 'Couple'
+            },
+            {
+                id: 14,
+                name: 'Family Matching Pink Set',
+                category: 'kids',
+                image: 'eyiwunmi_images/Plain_blackdress.jpg',
+                price: '₦160,000',
+                oldPrice: '₦190,000',
+                description: 'A coordinated set for parents and children in soft baby pink and purple patterns. An incredible look for dedication and birthday events.',
+                colours: ['#FFC0CB', '#4A2B5F'],
+                sizes: 'Custom Size Pack',
+                fabric: 'Polished Cotton & Brocade',
+                availability: 'Made to Order',
+                badge: 'sale',
+                badgeText: 'Family'
+            },
+            {
+                id: 15,
+                name: 'Grey Tailored Executive Suit',
+                category: 'men',
+                image: 'eyiwunmi_images/dinner_set.jpeg',
+                price: '₦80,000',
+                oldPrice: null,
+                description: 'A sharp and classic medium-grey suit with a structured shoulder line. A versatile wardrobe staple for executive business meetings.',
+                colours: ['#808080', '#FFFFFF'],
+                sizes: 'S, M, L, XL, 2XL',
+                fabric: 'Italian Wool & Viscose',
+                availability: 'In Stock',
+                badge: null,
+                badgeText: null
+            },
+            {
+                id: 16,
+                name: 'Burgundy Smart Suit',
+                category: 'men',
+                image: 'eyiwunmi_images/perfect_2piece.jpeg',
+                price: '₦88,000',
+                oldPrice: '₦100,000',
+                description: 'A rich burgundy smart suit styled with modern slim lapels. Perfect for evening networking, graduation, and dinner dates.',
+                colours: ['#800020', '#1F2937'],
+                sizes: 'M, L, XL, 2XL',
+                fabric: 'Stretch Rayon Blend',
+                availability: 'In Stock',
+                badge: 'new',
+                badgeText: 'Hot'
+            }
+        ]
+
+        // Load outfits from localStorage or initialize with defaults
+        if (!localStorage.getItem('eyiwunmi_outfits')) {
+            localStorage.setItem('eyiwunmi_outfits', JSON.stringify(defaultOutfits));
+        }
+
+        // Clear old database keys if old filenames exist
+        let stored = localStorage.getItem('eyiwunmi_outfits');
+        if (stored && (stored.includes('WhatsApp') || stored.includes('Screenshot') || stored.includes('ministers'))) {
+            localStorage.removeItem('eyiwunmi_outfits');
+        }
         let outfits = JSON.parse(localStorage.getItem('eyiwunmi_outfits') || '[]');
 
         // ============================================================
@@ -199,6 +453,8 @@
         const totalSlides = 3;
         let slideInterval = null;
         let currentCategory = 'all';
+        let currentGalleryPage = 1;
+        const itemsPerPage = 6;
 
         function goToSlide(index) {
             currentSlide = (index + totalSlides) % totalSlides;
@@ -273,7 +529,56 @@
         }
 
         function renderGallery() {
-            renderCards(galleryGrid, getFilteredOutfits());
+            const filtered = getFilteredOutfits();
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            
+            // Adjust current page if out of bounds
+            if (currentGalleryPage > totalPages) {
+                currentGalleryPage = totalPages;
+            }
+            if (currentGalleryPage < 1) {
+                currentGalleryPage = 1;
+            }
+
+            const startIndex = (currentGalleryPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageItems = filtered.slice(startIndex, endIndex);
+
+            renderCards(galleryGrid, pageItems);
+            renderPaginationControls(totalPages);
+        }
+
+        function renderPaginationControls(totalPages) {
+            const controls = document.getElementById('paginationControls');
+            if (!controls) return;
+
+            if (totalPages <= 1) {
+                controls.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            // Prev button
+            html += `<button class="pagination-btn" ${currentGalleryPage === 1 ? 'disabled' : ''} onclick="changeGalleryPage(${currentGalleryPage - 1})">‹</button>`;
+            
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="pagination-btn ${currentGalleryPage === i ? 'active' : ''}" onclick="changeGalleryPage(${i})">${i}</button>`;
+            }
+
+            // Next button
+            html += `<button class="pagination-btn" ${currentGalleryPage === totalPages ? 'disabled' : ''} onclick="changeGalleryPage(${currentGalleryPage + 1})">›</button>`;
+
+            controls.innerHTML = html;
+        }
+
+        window.changeGalleryPage = function(pageNumber) {
+            currentGalleryPage = pageNumber;
+            renderGallery();
+            // Smooth scroll back to wardrobe section top
+            document.getElementById('galleryTabs').scrollIntoView({ behavior: 'smooth' });
         }
 
         galleryTabs.querySelectorAll('button').forEach(btn => {
@@ -281,6 +586,7 @@
                 galleryTabs.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentCategory = btn.dataset.category;
+                currentGalleryPage = 1; // Reset to page 1 on filter click
                 renderGallery();
             });
         });
