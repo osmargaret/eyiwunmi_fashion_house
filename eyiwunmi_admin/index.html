@@ -1330,6 +1330,13 @@
         // Trigger initialization
         syncUI();
         showPage('dashboard');
+
+        // Storage sync listener for real-time tab updates
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'eyiwunmi_outfits' || e.key === 'eyiwunmi_messages') {
+                syncUI();
+            }
+        });
     </script>
 </body>
 </html>

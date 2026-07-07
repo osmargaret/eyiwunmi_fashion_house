@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eyiwunmi Fashion – About Us</title>
+    <link rel="icon" type="image/png" href="../eyiwunmi_images/LOGO_FAVICON.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="../eyiwunmi_images/logo.png" alt="Eyiwunmi Logo" class="logo-img" />
+                <span class="logo-text">Eyiwunmi</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="wardrobe.html">Wardrobe</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SLIDER ===== -->
+    <section class="hero-slider" id="heroSlider">
+        <div class="slides" id="slides">
+            <!-- slide 1 -->
+            <div class="slide">
+                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="decor d1"></div>
+                <div class="decor d2"></div>
+                <div class="decor d3"></div>
+                <div class="slide-content">
+                    <h1>Elevate Your <span class="highlight">Style</span></h1>
+                    <p>Discover the latest collections at Eyiwunmi Fashion – where elegance meets culture.</p>
+                    <a href="wardrobe.html" class="btn">Explore Wardrobe →</a>
+                </div>
+            </div>
+            <!-- slide 2 -->
+            <div class="slide">
+                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="decor d1" style="background:var(--rose);"></div>
+                <div class="decor d2" style="background:var(--gold);"></div>
+                <div class="decor d3"></div>
+                <div class="slide-content">
+                    <h1>New <span class="highlight">Designs</span> Dropping</h1>
+                    <p>Be the first to wear our fresh new arrivals — handpicked for the modern individual.</p>
+                    <a href="wardrobe.html" class="btn">Shop New Arrivals →</a>
+                </div>
+            </div>
+            <!-- slide 3 -->
+            <div class="slide">
+                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="decor d1" style="background:var(--teal);"></div>
+                <div class="decor d2" style="background:var(--purple-500);"></div>
+                <div class="decor d3"></div>
+                <div class="slide-content">
+                    <h1>Hot <span class="highlight">Deals</span> &amp; Sales</h1>
+                    <p>Limited-time offers on your favourite styles. Don't miss out on these exclusive prices.</p>
+                    <a href="wardrobe.html" class="btn">Grab Deals →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- controls -->
+        <button class="slider-arrow prev" id="prevSlide" aria-label="Previous slide">‹</button>
+        <button class="slider-arrow next" id="nextSlide" aria-label="Next slide">›</button>
+
+        <div class="slider-controls" id="sliderDots">
+            <span class="dot active" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+            <span class="dot" data-index="2"></span>
+        </div>
+    </section>
+
+    <!-- ===== PAGE: ABOUT ===== -->
+    <section class="page-section active" style="margin-top:0;">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text">
+                    <h2>About Eyiwunmi Fashion</h2>
+                    <p>
+                        At Eyiwunmi Fashion, we believe that style is a celebration of identity.
+                        Our boutique brings together the finest fabrics, bold designs, and cultural
+                        richness to create pieces that make you feel extraordinary.
+                    </p>
+                    <p>
+                        From bespoke suits to flowing gowns, every outfit is crafted with care,
+                        ensuring you look and feel your best for every moment that matters.
+                    </p>
+
+                    <div class="address-block">
+                        <h4>📍 Nigeria</h4>
+                        <p>2, Olokunola Street, Sholebo Estate,</p>
+                        <p>Lagos, Nigeria.</p>
+                    </div>
+                    <div class="address-block" style="margin-top:12px;border-left-color:var(--gold);">
+                        <h4>🇬🇧 United Kingdom</h4>
+                        <p>London, UK (by appointment)</p>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <p style="display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--purple-700);">
+                            <span style="font-size:1.3rem;">✉</span>
+                            <a href="mailto:eyiwunmifashion@gmail.com" style="font-weight:500;">eyiwunmifashion@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="../eyiwunmi_images/CEO_OF_EYIWUNMI_FASHION.jpg" alt="Enifonme Ephraim - CEO of Eyiwunmi Fashion" class="ceo-profile-img" />
+                    <h3 style="margin-top:20px;">Enifonme Ephraim</h3>
+                    <p style="color:var(--purple-500);font-size:0.82rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Founder &amp; Creative Director</p>
+                    <p style="color:var(--gray-600);margin-top:12px;max-width:360px;font-size:0.95rem;line-height:1.6;">
+                        Every piece begins as an untold story. With a unique mastery of her craft, Enifonme handpicks raw, untouched fabrics—luxury lace, shimmering silk, and rich Aso-oke—and breathes life into them. She weaves character and culture into every thread, turning simple bare materials into bespoke, elegant masterpieces that celebrate identity and elegance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="brand">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                    <img src="../eyiwunmi_images/logo.png" alt="Eyiwunmi Logo" style="width:48px; height:48px; object-fit:contain;" />
+                    <h3 style="margin-bottom:0; font-family:var(--font-display); font-size:1.8rem; color:var(--white);">Eyiwunmi</h3>
+                </div>
+                <p>Bespoke fashion for the modern individual — where tradition meets trend.</p>
+                <p style="margin-top:8px;opacity:0.5;font-size:0.85rem;">Lagos · London</p>
+            </div>
+            <div class="links">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="wardrobe.html">Wardrobe</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="contact-footer">
+                <h4>Reach Us</h4>
+                <p>2, Olokunola Street, Sholebo Estate, Lagos</p>
+                <p class="email">eyiwunmifashion@gmail.com</p>
+                <p style="margin-top:4px;">+234 802 701 6178</p>
+            </div>
+            <div class="bottom">
+                &copy; 2026 Eyiwunmi Fashion. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Pulsing WhatsApp Widget -->
+    <a href="https://wa.me/2348027016178?text=Hi%20Eyiwunmi%20Fashion!%20I'm%20visiting%20your%20website%20and%20would%20love%20to%20make%20an%20enquiry." class="whatsapp-floating-widget" target="_blank" aria-label="Chat on WhatsApp">
+        <span class="wa-icon">💬</span>
+        <span class="wa-number">+234 802 701 6178</span>
+    </a>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ============================================================
+        // DOM REFS & SLIDER
+        // ============================================================
+        const slides = document.getElementById('slides');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.getElementById('prevSlide');
+        const nextBtn = document.getElementById('nextSlide');
+        const hamburger = document.getElementById('hamburger');
+        const navLinksContainer = document.getElementById('navLinks');
+
+        let currentSlide = 0;
+        const totalSlides = 3;
+        let slideInterval = null;
+
+        function goToSlide(index) {
+            currentSlide = (index + totalSlides) % totalSlides;
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function nextSlide() { goToSlide(currentSlide + 1); }
+        function prevSlide() { goToSlide(currentSlide - 1); }
+
+        function startSlideInterval() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetSlideInterval() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+                startSlideInterval();
+            }
+        }
+
+        prevBtn.addEventListener('click', () => { prevSlide(); resetSlideInterval(); });
+        nextBtn.addEventListener('click', () => { nextSlide(); resetSlideInterval(); });
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                goToSlide(parseInt(dot.dataset.index));
+                resetSlideInterval();
+            });
+        });
+
+        // ============================================================
+        // HAMBURGER & SCROLL
+        // ============================================================
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinksContainer.classList.toggle('open');
+        });
+
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 30);
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        goToSlide(0);
+        startSlideInterval();
+
+        console.log('✨ Eyiwunmi Fashion — Boutique About Loaded.');
+    </script>
+</body>
+</html>

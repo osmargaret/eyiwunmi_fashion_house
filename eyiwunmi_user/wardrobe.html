@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eyiwunmi Fashion – Wardrobe Gallery</title>
+    <link rel="icon" type="image/png" href="../eyiwunmi_images/LOGO_FAVICON.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="../eyiwunmi_images/logo.png" alt="Eyiwunmi Logo" class="logo-img" />
+                <span class="logo-text">Eyiwunmi</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="wardrobe.html" class="active">Wardrobe</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SLIDER ===== -->
+    <section class="hero-slider" id="heroSlider">
+        <div class="slides" id="slides">
+            <!-- slide 1 -->
+            <div class="slide">
+                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="decor d1"></div>
+                <div class="decor d2"></div>
+                <div class="decor d3"></div>
+                <div class="slide-content">
+                    <h1>Elevate Your <span class="highlight">Style</span></h1>
+                    <p>Discover the latest collections at Eyiwunmi Fashion – where elegance meets culture.</p>
+                    <a href="wardrobe.html" class="btn">Explore Wardrobe →</a>
+                </div>
+            </div>
+            <!-- slide 2 -->
+            <div class="slide">
+                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="decor d1" style="background:var(--rose);"></div>
+                <div class="decor d2" style="background:var(--gold);"></div>
+                <div class="decor d3"></div>
+                <div class="slide-content">
+                    <h1>New <span class="highlight">Designs</span> Dropping</h1>
+                    <p>Be the first to wear our fresh new arrivals — handpicked for the modern individual.</p>
+                    <a href="wardrobe.html" class="btn">Shop New Arrivals →</a>
+                </div>
+            </div>
+            <!-- slide 3 -->
+            <div class="slide">
+                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="decor d1" style="background:var(--teal);"></div>
+                <div class="decor d2" style="background:var(--purple-500);"></div>
+                <div class="decor d3"></div>
+                <div class="slide-content">
+                    <h1>Hot <span class="highlight">Deals</span> &amp; Sales</h1>
+                    <p>Limited-time offers on your favourite styles. Don't miss out on these exclusive prices.</p>
+                    <a href="wardrobe.html" class="btn">Grab Deals →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- controls -->
+        <button class="slider-arrow prev" id="prevSlide" aria-label="Previous slide">‹</button>
+        <button class="slider-arrow next" id="nextSlide" aria-label="Next slide">›</button>
+
+        <div class="slider-controls" id="sliderDots">
+            <span class="dot active" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+            <span class="dot" data-index="2"></span>
+        </div>
+    </section>
+
+    <!-- ===== PAGE: GALLERY ===== -->
+    <section class="page-section active" style="margin-top:0;">
+        <div class="container">
+            <h2 class="section-title">👗 Wardrobe</h2>
+            <p class="section-sub">Explore our collections — from timeless classics to bold new statements.</p>
+
+            <div class="gallery-tabs" id="galleryTabs">
+                <button class="active" data-category="all">All</button>
+                <button data-category="men">Men</button>
+                <button data-category="women">Women</button>
+                <button data-category="kids">Kids</button>
+                <button data-category="asoebi">Asoebi</button>
+            </div>
+
+            <div class="gallery-grid" id="galleryGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <button class="close-modal" id="closeModal">✕</button>
+            <div class="modal-img" id="modalImgContainer">
+                <img id="modalImg" src="" alt="Outfit Details" style="width:100%; height:100%; object-fit:contain; object-position:center top; background:var(--purple-950);" />
+            </div>
+            <div class="modal-category" id="modalCategory">Men</div>
+            <h2 class="modal-title" id="modalTitle">Classic Suit</h2>
+            <div class="modal-price" id="modalPrice">
+                ₦85,000 <span class="old">₦110,000</span>
+            </div>
+            <p class="modal-desc" id="modalDesc">A timeless suit crafted from premium fabric.</p>
+
+            <div class="modal-details" id="modalDetails">
+                <div class="detail-item">
+                    <h5>Fabric</h5>
+                    <p id="modalFabric">Super 120s Wool</p>
+                </div>
+                <div class="detail-item">
+                    <h5>Available Sizes</h5>
+                    <p id="modalSizes">S, M, L, XL</p>
+                </div>
+                <div class="detail-item">
+                    <h5>Availability</h5>
+                    <p id="modalAvailability" class="in-stock">In Stock</p>
+                </div>
+            </div>
+
+            <div class="modal-colors">
+                <h5>Colours Available</h5>
+                <div id="modalColours" style="display:flex; align-items:center; gap:12px; margin-top:8px;"></div>
+            </div>
+
+            <div style="margin-top:32px; display:grid; grid-template-columns:1fr; gap:16px;">
+                <a href="#" class="btn-whatsapp" id="whatsappBtn" target="_blank">💬 Order on WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="brand">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                    <img src="../eyiwunmi_images/logo.png" alt="Eyiwunmi Logo" style="width:48px; height:48px; object-fit:contain;" />
+                    <h3 style="margin-bottom:0; font-family:var(--font-display); font-size:1.8rem; color:var(--white);">Eyiwunmi</h3>
+                </div>
+                <p>Bespoke fashion for the modern individual — where tradition meets trend.</p>
+                <p style="margin-top:8px;opacity:0.5;font-size:0.85rem;">Lagos · London</p>
+            </div>
+            <div class="links">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="wardrobe.html">Wardrobe</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="contact-footer">
+                <h4>Reach Us</h4>
+                <p>2, Olokunola Street, Sholebo Estate, Lagos</p>
+                <p class="email">eyiwunmifashion@gmail.com</p>
+                <p style="margin-top:4px;">+234 802 701 6178</p>
+            </div>
+            <div class="bottom">
+                &copy; 2026 Eyiwunmi Fashion. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Pulsing WhatsApp Widget -->
+    <a href="https://wa.me/2348027016178?text=Hi%20Eyiwunmi%20Fashion!%20I'm%20visiting%20your%20website%20and%20would%20love%20to%20make%20an%20enquiry." class="whatsapp-floating-widget" target="_blank" aria-label="Chat on WhatsApp">
+        <span class="wa-icon">💬</span>
+        <span class="wa-number">+234 802 701 6178</span>
+    </a>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        let outfits = JSON.parse(localStorage.getItem('eyiwunmi_outfits') || '[]');
+
+        // ============================================================
+        // DOM REFS & SLIDER
+        // ============================================================
+        const slides = document.getElementById('slides');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.getElementById('prevSlide');
+        const nextBtn = document.getElementById('nextSlide');
+        const hamburger = document.getElementById('hamburger');
+        const navLinksContainer = document.getElementById('navLinks');
+        const galleryGrid = document.getElementById('galleryGrid');
+        const galleryTabs = document.getElementById('galleryTabs');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeModal = document.getElementById('closeModal');
+
+        let currentSlide = 0;
+        const totalSlides = 3;
+        let slideInterval = null;
+        let currentCategory = 'all';
+
+        function goToSlide(index) {
+            currentSlide = (index + totalSlides) % totalSlides;
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function nextSlide() { goToSlide(currentSlide + 1); }
+        function prevSlide() { goToSlide(currentSlide - 1); }
+
+        function startSlideInterval() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetSlideInterval() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+                startSlideInterval();
+            }
+        }
+
+        prevBtn.addEventListener('click', () => { prevSlide(); resetSlideInterval(); });
+        nextBtn.addEventListener('click', () => { nextSlide(); resetSlideInterval(); });
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                goToSlide(parseInt(dot.dataset.index));
+                resetSlideInterval();
+            });
+        });
+
+        // ============================================================
+        // RENDERING & FILTERS
+        // ============================================================
+        function renderCards(grid, list) {
+            if (!grid) return;
+            
+            grid.innerHTML = list.map(item => `
+                <div class="outfit-card" data-id="${item.id}">
+                    <div class="card-img">
+                        <img src="../${item.image}" alt="${item.name}" class="outfit-img" onerror="this.src='../eyiwunmi_images/logo.png'" />
+                        ${item.badgeText ? `<span class="badge ${item.badge}">${item.badgeText}</span>` : ''}
+                    </div>
+                    <div class="card-body">
+                        <div class="category">${item.category}</div>
+                        <h3>${item.name}</h3>
+                        <div class="price">
+                            ${item.price}
+                            ${item.oldPrice ? `<span class="old">${item.oldPrice}</span>` : ''}
+                        </div>
+                        <button class="quick-view" data-id="${item.id}">👁 View Details →</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Attach click events
+            grid.querySelectorAll('.outfit-card, .quick-view').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const card = el.closest('.outfit-card');
+                    const id = parseInt(card ? card.dataset.id : el.dataset.id);
+                    if (id) openModal(id);
+                });
+            });
+        }
+
+        function getFilteredOutfits() {
+            if (currentCategory === 'all') return outfits;
+            return outfits.filter(o => o.category === currentCategory);
+        }
+
+        function renderGallery() {
+            renderCards(galleryGrid, getFilteredOutfits());
+        }
+
+        galleryTabs.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                galleryTabs.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                renderGallery();
+            });
+        });
+
+        // ============================================================
+        // MODAL
+        // ============================================================
+        function openModal(id) {
+            const item = outfits.find(o => o.id === id);
+            if (!item) return;
+
+            document.getElementById('modalImg').src = '../' + item.image;
+            document.getElementById('modalImg').alt = item.name;
+            document.getElementById('modalCategory').textContent = item.category.charAt(0).toUpperCase() + item.category.slice(1);
+            document.getElementById('modalTitle').textContent = item.name;
+            document.getElementById('modalPrice').innerHTML = `
+                ${item.price}
+                ${item.oldPrice ? `<span class="old">${item.oldPrice}</span>` : ''}
+            `;
+            document.getElementById('modalDesc').textContent = item.description;
+
+            const colourHtml = item.colours.map(c =>
+                `<span class="color-swatch" style="background:${c};"></span> ${c}`
+            ).join(' ');
+            document.getElementById('modalColours').innerHTML = colourHtml;
+
+            document.getElementById('modalSizes').textContent = item.sizes;
+            document.getElementById('modalFabric').textContent = item.fabric;
+            document.getElementById('modalAvailability').textContent = item.availability;
+
+            const waMsg = encodeURIComponent(
+                `Hi Eyiwunmi Fashion! I'm interested in "${item.name}" (${item.price}). Please let me know more.`
+            );
+            document.getElementById('whatsappBtn').href = `https://wa.me/2348027016178?text=${waMsg}`;
+
+            modalOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModalFn() {
+            modalOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        closeModal.addEventListener('click', closeModalFn);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModalFn();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModalFn();
+        });
+
+        // ============================================================
+        // HAMBURGER & SCROLL
+        // ============================================================
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinksContainer.classList.toggle('open');
+        });
+
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 30);
+        });
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        renderGallery();
+        goToSlide(0);
+        startSlideInterval();
+
+        // Check if there is an ID parameter in the URL (redirect from home page quick view)
+        const urlParams = new URLSearchParams(window.location.search);
+        const outfitId = parseInt(urlParams.get('id'));
+        if (outfitId) {
+            setTimeout(() => openModal(outfitId), 300);
+        }
+
+        // Storage listener for admin updates
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'eyiwunmi_outfits') {
+                outfits = JSON.parse(e.newValue || '[]');
+                renderGallery();
+            }
+        });
+
+        console.log('✨ Eyiwunmi Fashion — Boutique Wardrobe Loaded.');
+    </script>
+</body>
+</html>
