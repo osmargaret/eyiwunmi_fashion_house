@@ -7,6 +7,10 @@
     <link rel="icon" type="image/png" href="../eyiwunmi_images/LOGO_FAVICON.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="index.css" />
+
+    <!-- Sanity Headless CMS Client & Configuration -->
+    <script src="https://unpkg.com/@sanity/client/umd/sanityClient.js"></script>
+    <script src="sanity-config.js"></script>
 </head>
 <body>
 
@@ -391,6 +395,22 @@
             localStorage.removeItem('eyiwunmi_outfits');
         }
         let outfits = JSON.parse(localStorage.getItem('eyiwunmi_outfits') || '[]');
+        // ============================================================
+        // SANITY INTEGRATION INITIALIZER
+        // ============================================================
+        let isUsingSanity = false;
+        let sanityClientInstance = null;
+
+        if (typeof SANITY_CONFIG !== 'undefined' && SANITY_CONFIG.projectId) {
+            try {
+                sanityClientInstance = SanityClient.createClient(SANITY_CONFIG);
+                isUsingSanity = true;
+                console.log('🔌 Connected to Sanity.io Headless CMS');
+            } catch (err) {
+                console.error('Failed to initialize Sanity Client:', err);
+            }
+        }
+
 
         // ============================================================
         // DOM REFS & SLIDER
@@ -449,7 +469,7 @@
             grid.innerHTML = displayList.map(item => `
                 <div class="outfit-card" data-id="${item.id}">
                     <div class="card-img">
-                        <img src="../${item.image}" alt="${item.name}" class="outfit-img" onerror="this.src='../eyiwunmi_images/logo.png'" />
+                        <img src="${item.image.startsWith('http') ? item.image : '../' + item.image}" alt="${item.name}" class="outfit-img" onerror="this.src='../eyiwunmi_images/logo.png'" />
                         ${item.badgeText ? `<span class="badge ${item.badge}">${item.badgeText}</span>` : ''}
                     </div>
                     <div class="card-body">
@@ -466,7 +486,22 @@
         }
 
         function renderHome() {
-            renderCards(homeGrid, outfits, 6);
+            if (isUsingSanity && sanityClientInstance) {
+                sanityClientInstance.fetch(`*[_type == "outfit"] | order(id asc) {
+                    id, name, category, "image": image.asset->url, price, oldPrice, description, colours, sizes, fabric, availability, badge, badgeText
+                }`).then(sanityOutfits => {
+                    if (sanityOutfits && sanityOutfits.length > 0) {
+                        outfits = sanityOutfits;
+                        localStorage.setItem('eyiwunmi_outfits', JSON.stringify(outfits));
+                    }
+                    renderCards(homeGrid, outfits, 6);
+                }).catch(err => {
+                    console.error('Sanity fetch failed, falling back to local database:', err);
+                    renderCards(homeGrid, outfits, 6);
+                });
+            } else {
+                renderCards(homeGrid, outfits, 6);
+            }
         }
 
         // ============================================================
