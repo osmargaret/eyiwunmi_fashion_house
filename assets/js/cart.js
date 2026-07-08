@@ -179,11 +179,11 @@ function renderCart() {
         const subtotal = priceNum * item.quantity;
         grandTotal += subtotal;
 
-        const imgUrl = item.image.startsWith('http') ? item.image : '../' + item.image;
+        const imgUrl = item.image;
 
         return `
             <div class="cart-item">
-                <img src="${imgUrl}" class="cart-item-img" onerror="this.src='../eyiwunmi_images/logo.png'" alt="${item.name}" />
+                <img src="${imgUrl}" class="cart-item-img" onerror="this.src='./assets/images/logo.png'" alt="${item.name}" />
                 <div class="cart-item-details">
                     <div>
                         <div class="cart-item-title">${item.name}</div>

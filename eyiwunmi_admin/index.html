@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eyiwunmi Fashion – Admin Dashboard</title>
-    <link rel="icon" type="image/png" href="../eyiwunmi_images/LOGO_FAVICON.png" />
+    <link rel="icon" type="image/png" href="./assets/images/LOGO_FAVICON.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
 
     <!-- Sanity Headless CMS Client & Configuration -->
     <script src="https://unpkg.com/@sanity/client/umd/sanityClient.js"></script>
-    <script src="../eyiwunmi_user/sanity-config.js"></script>
+    <script src="./assets/js/sanity-config.js"></script>
     <style>
         /* ===== CSS VARIABLES ===== */
         :root {
@@ -617,7 +617,7 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <a href="#" class="brand-header">
-            <img src="../eyiwunmi_images/logo.png" alt="Eyiwunmi Logo" class="brand-logo" />
+            <img src="./assets/images/logo.png" alt="Eyiwunmi Logo" class="brand-logo" />
             <span class="brand-name">Eyiwunmi <span>✦</span></span>
         </a>
         <ul class="menu-list">
@@ -927,7 +927,7 @@
                             <input type="text" id="form-oldPrice" placeholder="₦100,000" />
                         </div>
                         <div class="form-group">
-                            <label for="form-image">Image Filename (under eyiwunmi_images/)</label>
+                            <label for="form-image">Image Filename (under images/)</label>
                             <select id="form-image" required>
                                 <option value="beautiful_piece.jpeg">Sunset Yellow Gown (beautiful_piece.jpeg)</option>
                                 <option value="beautiful_2piece.jpeg">Navy Blue Senator (beautiful_2piece.jpeg)</option>
@@ -992,7 +992,7 @@
                 id: 1,
                 name: 'Elegant Navy Blue Senator Style',
                 category: 'men',
-                image: 'eyiwunmi_images/beautiful_2piece.jpeg',
+                image: './assets/images/beautiful_2piece.jpeg',
                 price: '₦75,000',
                 oldPrice: '₦90,000',
                 description: 'A sharp, tailored navy blue Senator outfit featuring clean lines and a premium finish. Perfect for weddings, church service, or special ceremonies.',
@@ -1007,7 +1007,7 @@
                 id: 2,
                 name: 'Classic Navy Two-Piece Suit',
                 category: 'men',
-                image: 'eyiwunmi_images/slay_with_style.jpeg',
+                image: './assets/images/slay_with_style.jpeg',
                 price: '₦85,000',
                 oldPrice: '₦110,000',
                 description: 'A modern, slim-fit navy blue suit crafted from high-quality wool blend. Ideal for formal corporate engagements, business, and formal events.',
@@ -1022,7 +1022,7 @@
                 id: 3,
                 name: 'Peach Asoebi Lace Gown',
                 category: 'women',
-                image: 'eyiwunmi_images/luxury_outing_gown.png',
+                image: './assets/images/luxury_outing_gown.png',
                 price: '₦110,000',
                 oldPrice: null,
                 description: 'An elegant peach lace native gown designed with intricate patterns and a matching gele. Perfect for brides, mothers of the day, and high-profile guests.',
@@ -1037,7 +1037,7 @@
                 id: 4,
                 name: 'Kids Royal Agbada Set',
                 category: 'kids',
-                image: 'eyiwunmi_images/eyiwunmi_closet.jpg',
+                image: './assets/images/eyiwunmi_closet.jpg',
                 price: '₦48,000',
                 oldPrice: '₦58,000',
                 description: 'A beautiful miniature white and gold traditional agbada for your little prince. Crafted with soft, non-itchy materials for maximum comfort.',
@@ -1052,7 +1052,7 @@
                 id: 5,
                 name: 'Luxury Green & Gold Lace Gown',
                 category: 'asoebi',
-                image: 'eyiwunmi_images/femae_classic_suit.png',
+                image: './assets/images/femae_classic_suit.png',
                 price: '₦150,000',
                 oldPrice: '₦180,000',
                 description: 'An exquisite statement green and gold lace gown with dramatic detailing. Crafted for prestigious celebrations where standing out is a must.',
@@ -1067,7 +1067,7 @@
                 id: 6,
                 name: 'Charcoal Black Senator Style',
                 category: 'men',
-                image: 'eyiwunmi_images/nice_dress.jpeg',
+                image: './assets/images/nice_dress.jpeg',
                 price: '₦70,000',
                 oldPrice: null,
                 description: 'A clean and minimalist charcoal black Senator wear with subtle chest embroidery. Perfect for corporate-casual events and weekend outings.',
@@ -1082,7 +1082,7 @@
                 id: 7,
                 name: 'Beige Embroidered Kaftan',
                 category: 'men',
-                image: 'eyiwunmi_images/luxury_jumpsuit.jpeg',
+                image: './assets/images/luxury_jumpsuit.jpeg',
                 price: '₦78,000',
                 oldPrice: '₦95,000',
                 description: 'A premium sand-beige kaftan set with intricate tone-on-tone chest embroidery. Breathable and comfortable for all-day wear.',
@@ -1097,7 +1097,7 @@
                 id: 8,
                 name: 'Classic Black Tuxedo',
                 category: 'men',
-                image: 'eyiwunmi_images/luxury_bubu_gown.jpeg',
+                image: './assets/images/luxury_bubu_gown.jpeg',
                 price: '₦95,000',
                 oldPrice: '₦125,000',
                 description: 'A sharp, double-breasted black tuxedo with satin peak lapels. The absolute definition of formal elegance for weddings and black-tie galas.',
@@ -1112,7 +1112,7 @@
                 id: 9,
                 name: 'Royal Blue Evening Gown',
                 category: 'women',
-                image: 'eyiwunmi_images/luxury_suit.jpeg',
+                image: './assets/images/luxury_suit.jpeg',
                 price: '₦92,000',
                 oldPrice: null,
                 description: 'A breathtaking royal blue gown with draped waist detailing and a high slit. Designed to command attention at dinners and red carpets.',
@@ -1127,7 +1127,7 @@
                 id: 10,
                 name: 'Crimson & Black Patterned Dress',
                 category: 'women',
-                image: 'eyiwunmi_images/dinner_choice.jpeg',
+                image: './assets/images/dinner_choice.jpeg',
                 price: '₦88,000',
                 oldPrice: '₦105,000',
                 description: 'A bold, abstract red and black patterned long gown with a modern wrap bodice. Perfect for high-fashion statements and cocktails.',
@@ -1142,7 +1142,7 @@
                 id: 11,
                 name: 'Sunset Yellow Asoebi Gown',
                 category: 'women',
-                image: 'eyiwunmi_images/beautiful_piece.jpeg',
+                image: './assets/images/beautiful_piece.jpeg',
                 price: '₦120,000',
                 oldPrice: '₦140,000',
                 description: 'A custom sunset yellow lace gown detailed with pink floral applique. A brilliant choice for spring and summer traditional occasions.',
@@ -1157,7 +1157,7 @@
                 id: 12,
                 name: 'Golden Gele Asoebi Set',
                 category: 'asoebi',
-                image: 'eyiwunmi_images/comfortable_bub.jpeg',
+                image: './assets/images/comfortable_bub.jpeg',
                 price: '₦125,000',
                 oldPrice: null,
                 description: 'A complete traditional set featuring a yellow lace gown and premium metallic gold gele. Tailored to absolute perfection.',
@@ -1172,7 +1172,7 @@
                 id: 13,
                 name: 'Royal Blue Couple Asoebi Set',
                 category: 'asoebi',
-                image: 'eyiwunmi_images/luxury_materials.png',
+                image: './assets/images/luxury_materials.png',
                 price: '₦195,000',
                 oldPrice: '₦230,000',
                 description: 'A matching royal blue native wear package for couples. Includes a tailored senator/agbada style and a beautiful custom lady’s gown.',
@@ -1187,7 +1187,7 @@
                 id: 14,
                 name: 'Family Matching Pink Set',
                 category: 'kids',
-                image: 'eyiwunmi_images/Plain_blackdress.jpg',
+                image: './assets/images/Plain_blackdress.jpg',
                 price: '₦160,000',
                 oldPrice: '₦190,000',
                 description: 'A coordinated set for parents and children in soft baby pink and purple patterns. An incredible look for dedication and birthday events.',
@@ -1202,7 +1202,7 @@
                 id: 15,
                 name: 'Grey Tailored Executive Suit',
                 category: 'men',
-                image: 'eyiwunmi_images/dinner_set.jpeg',
+                image: './assets/images/dinner_set.jpeg',
                 price: '₦80,000',
                 oldPrice: null,
                 description: 'A sharp and classic medium-grey suit with a structured shoulder line. A versatile wardrobe staple for executive business meetings.',
@@ -1217,7 +1217,7 @@
                 id: 16,
                 name: 'Burgundy Smart Suit',
                 category: 'men',
-                image: 'eyiwunmi_images/perfect_2piece.jpeg',
+                image: './assets/images/perfect_2piece.jpeg',
                 price: '₦88,000',
                 oldPrice: '₦100,000',
                 description: 'A rich burgundy smart suit styled with modern slim lapels. Perfect for evening networking, graduation, and dinner dates.',
@@ -1475,7 +1475,7 @@
                     return `
                     <tr>
                         <td>
-                            <img src="${imgUrl}" class="img-cell" onerror="this.src='../eyiwunmi_images/LOGO_FAVICON.png'" alt="Product Image" />
+                            <img src="${imgUrl}" class="img-cell" onerror="this.src='./assets/images/LOGO_FAVICON.png'" alt="Product Image" />
                         </td>
                         <td style="font-weight: 600; color: var(--gold-light);">${item.name}</td>
                         <td style="text-transform: capitalize;">${item.category}</td>
@@ -1593,7 +1593,7 @@
             document.getElementById('form-price').value = item.price;
             document.getElementById('form-oldPrice').value = item.oldPrice || '';
             
-            const imgFilename = item.image ? item.image.replace('eyiwunmi_images/', '') : '';
+            const imgFilename = item.image ? item.image.replace('./assets/images/', '') : '';
             document.getElementById('form-image').value = imgFilename;
             
             document.getElementById('form-badge').value = item.badge || '';
@@ -1630,7 +1630,7 @@
                 badgeText = badge.charAt(0).toUpperCase() + badge.slice(1);
             }
 
-            const localImagePath = 'eyiwunmi_images/' + imageFile;
+            const localImagePath = './assets/images/' + imageFile;
 
             if (isUsingSanity && sanityClientInstance) {
                 if (!SANITY_CONFIG.token) {
@@ -2243,7 +2243,7 @@
     <!-- ===== LOGIN OVERLAY HTML ===== -->
     <div id="loginOverlay" class="modal-overlay" style="display: flex; background: var(--purple-950); backdrop-filter: blur(12px); z-index: 99999;">
         <div class="modal-box" style="max-width: 400px; padding: 40px; border: 1px solid rgba(255,255,255,0.15); background: var(--purple-900); text-align: center;">
-            <img src="../eyiwunmi_images/logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 24px;" />
+            <img src="./assets/images/logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 24px;" />
             <h2 style="font-family: var(--font-display); color: var(--white); font-size: 1.8rem; margin-bottom: 8px;">Eyiwunmi <span>✦</span></h2>
             <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 32px;">Bespoke Admin Portal Access</p>
             

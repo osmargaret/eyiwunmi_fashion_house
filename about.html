@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Eyiwunmi Fashion – Contact Us</title>
-    <link rel="icon" type="image/png" href="../eyiwunmi_images/LOGO_FAVICON.png" />
+    <title>Eyiwunmi Fashion – About Us</title>
+    <link rel="icon" type="image/png" href="./assets/images/LOGO_FAVICON.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="index.css" />
-    <script src="sanity-config.js"></script>
-    <script src="cart.js"></script>
+    <link rel="stylesheet" href="assets/css/index.css" />
+    <script src="assets/js/cart.js"></script>
 </head>
 <body>
 
@@ -16,14 +15,14 @@
     <nav class="navbar" id="navbar">
         <div class="container">
             <a href="index.html" class="logo">
-                <img src="../eyiwunmi_images/logo.png" alt="Eyiwunmi Logo" class="logo-img" />
+                <img src="./assets/images/logo.png" alt="Eyiwunmi Logo" class="logo-img" />
                 <span class="logo-text">Eyiwunmi</span>
             </a>
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="wardrobe.html">Wardrobe</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html" class="active">Contact</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
             </ul>
             <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                 <span></span><span></span><span></span>
@@ -36,7 +35,7 @@
         <div class="slides" id="slides">
             <!-- slide 1 -->
             <div class="slide">
-                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="slide-bg" style="background-image: url('./assets/images/Hero_section.png');"></div>
                 <div class="decor d1"></div>
                 <div class="decor d2"></div>
                 <div class="decor d3"></div>
@@ -48,7 +47,7 @@
             </div>
             <!-- slide 2 -->
             <div class="slide">
-                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="slide-bg" style="background-image: url('./assets/images/Hero_section.png');"></div>
                 <div class="decor d1" style="background:var(--rose);"></div>
                 <div class="decor d2" style="background:var(--gold);"></div>
                 <div class="decor d3"></div>
@@ -60,7 +59,7 @@
             </div>
             <!-- slide 3 -->
             <div class="slide">
-                <div class="slide-bg" style="background-image: url('../eyiwunmi_images/Hero_section.png');"></div>
+                <div class="slide-bg" style="background-image: url('./assets/images/Hero_section.png');"></div>
                 <div class="decor d1" style="background:var(--teal);"></div>
                 <div class="decor d2" style="background:var(--purple-500);"></div>
                 <div class="decor d3"></div>
@@ -83,58 +82,45 @@
         </div>
     </section>
 
-    <!-- ===== PAGE: CONTACT ===== -->
+    <!-- ===== PAGE: ABOUT ===== -->
     <section class="page-section active" style="margin-top:0;">
         <div class="container">
-            <h2 class="section-title">📬 Get in Touch</h2>
-            <p class="section-sub">We'd love to hear from you — reach out for enquiries, orders, or styling advice.</p>
+            <div class="about-grid">
+                <div class="about-text">
+                    <h2>About Eyiwunmi Fashion</h2>
+                    <p>
+                        At Eyiwunmi Fashion, we believe that style is a celebration of identity.
+                        Our boutique brings together the finest fabrics, bold designs, and cultural
+                        richness to create pieces that make you feel extraordinary.
+                    </p>
+                    <p>
+                        From bespoke suits to flowing gowns, every outfit is crafted with care,
+                        ensuring you look and feel your best for every moment that matters.
+                    </p>
 
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <div class="info-item">
-                        <div class="icon">📍</div>
-                        <div class="text">
-                            <h4>Visit Us</h4>
-                            <p>2, Olokunola Street, Sholebo Estate, Lagos, Nigeria</p>
-                        </div>
+                    <div class="address-block">
+                        <h4>📍 Nigeria</h4>
+                        <p>2, Olokunola Street, Sholebo Estate,</p>
+                        <p>Lagos, Nigeria.</p>
                     </div>
-                    <div class="info-item">
-                        <div class="icon">📞</div>
-                        <div class="text">
-                            <h4>Call / WhatsApp</h4>
-                            <p>+234 802 701 6178</p>
-                        </div>
+                    <div class="address-block" style="margin-top:12px;border-left-color:var(--gold);">
+                        <h4>🇬🇧 United Kingdom</h4>
+                        <p>London, UK (by appointment)</p>
                     </div>
-                    <div class="info-item">
-                        <div class="icon">✉</div>
-                        <div class="text">
-                            <h4>Email</h4>
-                            <p><a href="mailto:eyiwunmifashion@gmail.com" style="color:var(--purple-700);font-weight:500;">eyiwunmifashion@gmail.com</a></p>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="icon">🌍</div>
-                        <div class="text">
-                            <h4>UK Location</h4>
-                            <p>London, United Kingdom (by appointment)</p>
-                        </div>
+                    <div style="margin-top:16px;">
+                        <p style="display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--purple-700);">
+                            <span style="font-size:1.3rem;">✉</span>
+                            <a href="mailto:eyiwunmifashion@gmail.com" style="font-weight:500;">eyiwunmifashion@gmail.com</a>
+                        </p>
                     </div>
                 </div>
-
-                <div class="contact-form">
-                    <h3>Send a Message</h3>
-                    <form id="contactForm">
-                        <label for="contactName">Your Name</label>
-                        <input type="text" id="contactName" placeholder="Full name" required />
-
-                        <label for="contactEmail">Email Address</label>
-                        <input type="email" id="contactEmail" placeholder="you@example.com" required />
-
-                        <label for="contactMsg">Message</label>
-                        <textarea id="contactMsg" placeholder="Tell us about your style needs…" required></textarea>
-
-                        <button type="submit" class="btn" style="border:none; cursor:pointer; width:100%; text-align:center;">Send Message via WhatsApp →</button>
-                    </form>
+                <div class="about-image">
+                    <img src="./assets/images/CEO_OF_EYIWUNMI_FASHION.jpg" alt="Enifonme Ephraim - CEO of Eyiwunmi Fashion" class="ceo-profile-img" />
+                    <h3 style="margin-top:20px;">Enifonme Ephraim</h3>
+                    <p style="color:var(--purple-500);font-size:0.82rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Founder &amp; Creative Director</p>
+                    <p style="color:var(--gray-600);margin-top:12px;max-width:360px;font-size:0.95rem;line-height:1.6;">
+                        Every piece begins as an untold story. With a unique mastery of her craft, Enifonme handpicks raw, untouched fabrics—luxury lace, shimmering silk, and rich Aso-oke—and breathes life into them. She weaves character and culture into every thread, turning simple bare materials into bespoke, elegant masterpieces that celebrate identity and elegance.
+                    </p>
                 </div>
             </div>
         </div>
@@ -145,7 +131,7 @@
         <div class="container">
             <div class="brand">
                 <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                    <img src="../eyiwunmi_images/logo.png" alt="Eyiwunmi Logo" style="width:48px; height:48px; object-fit:contain;" />
+                    <img src="./assets/images/logo.png" alt="Eyiwunmi Logo" style="width:48px; height:48px; object-fit:contain;" />
                     <h3 style="margin-bottom:0; font-family:var(--font-display); font-size:1.8rem; color:var(--white);">Eyiwunmi</h3>
                 </div>
                 <p>Bespoke fashion for the modern individual — where tradition meets trend.</p>
@@ -227,74 +213,6 @@
         });
 
         // ============================================================
-        // CONTACT FORM SUBMISSION
-        // ============================================================
-        document.getElementById('contactForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('contactName').value.trim();
-            const email = document.getElementById('contactEmail').value.trim();
-            const msg = document.getElementById('contactMsg').value.trim();
-            
-            if (name && email && msg) {
-                const btn = e.target.querySelector('button[type="submit"]');
-                const origText = btn.textContent;
-                btn.disabled = true;
-                btn.textContent = 'Sending Message...';
-
-                let submittedToCms = false;
-
-                // Post to Express API if Sanity is configured
-                if (typeof SANITY_CONFIG !== 'undefined' && SANITY_CONFIG.projectId) {
-                    try {
-                        const response = await fetch('http://localhost:5000/api/enquiries', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ name, email, message: msg })
-                        });
-                        
-                        if (response.ok) {
-                            submittedToCms = true;
-                            console.log('✅ Enquiry saved to Sanity CMS');
-                        } else {
-                            console.warn('Backend server returned error:', await response.text());
-                        }
-                    } catch (err) {
-                        console.error('Failed to post to backend enquiries API:', err);
-                    }
-                }
-
-                if (!submittedToCms) {
-                    try {
-                        const messages = JSON.parse(localStorage.getItem('eyiwunmi_messages') || '[]');
-                        messages.push({
-                            name: name,
-                            email: email,
-                            message: msg,
-                            date: new Date().toLocaleString()
-                        });
-                        localStorage.setItem('eyiwunmi_messages', JSON.stringify(messages));
-                        console.log('💾 Enquiry saved locally');
-                    } catch (err) {
-                        console.error('Failed to save inquiry locally:', err);
-                    }
-                }
-
-                btn.disabled = false;
-                btn.textContent = origText;
-
-                const waMsg = encodeURIComponent(
-                    `Hi Eyiwunmi Fashion! My name is ${name} (${email}). Message: ${msg}`
-                );
-                window.open(`https://wa.me/2348027016178?text=${waMsg}`, '_blank');
-                e.target.reset();
-            } else {
-                alert('Please fill in all fields.');
-            }
-        });
-
-        // ============================================================
         // HAMBURGER & SCROLL
         // ============================================================
         hamburger.addEventListener('click', () => {
@@ -313,7 +231,7 @@
         goToSlide(0);
         startSlideInterval();
 
-        console.log('✨ Eyiwunmi Fashion — Boutique Contact Loaded.');
+        console.log('✨ Eyiwunmi Fashion — Boutique About Loaded.');
     </script>
 </body>
 </html>
