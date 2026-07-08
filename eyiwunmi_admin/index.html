@@ -645,6 +645,12 @@
                     <span>Measurements</span>
                 </a>
             </li>
+            <li class="menu-item" id="menu-analytics">
+                <a href="#" onclick="showPage('analytics')">
+                    <span class="icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+            </li>
             <li class="menu-item" id="menu-cms">
                 <a href="#" onclick="showPage('cms')">
                     <span class="icon">⚙️</span>
@@ -780,6 +786,29 @@
                     <button class="btn-primary" id="btn-sync-now" onclick="syncLocalToSanity()" style="background: linear-gradient(135deg, var(--teal-500), #059669);">🔄 Sync Local to Sanity</button>
                     <div id="sync-status-msg" style="font-weight: 500; font-size: 0.9rem; color: var(--purple-500);"></div>
                 </div>
+
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 32px 0;" />
+
+                <h3 style="color: var(--gold); margin-bottom: 12px;">🔒 Admin Passcode</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">
+                    Change the admin dashboard login passcode. You will need to re-login after changing.
+                </p>
+                <form id="changePasscodeForm" onsubmit="handleChangePasscode(event)">
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="form-group">
+                            <label for="current-passcode">Current Passcode</label>
+                            <input type="password" id="current-passcode" placeholder="Enter current passcode" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="new-passcode">New Passcode (min 6 chars)</label>
+                            <input type="password" id="new-passcode" placeholder="Enter new passcode" required minlength="6" />
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 16px; margin-top: 10px;">
+                        <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #EF4444, #DC2626);">🔐 Update Passcode</button>
+                        <div id="passcode-status-msg" style="font-weight: 500; font-size: 0.9rem;"></div>
+                    </div>
+                </form>
             </div>
         </section>
 
@@ -802,6 +831,65 @@
                         <!-- Populated dynamically -->
                     </tbody>
                 </table>
+            </div>
+        </section>
+
+        <!-- PAGE 6: ANALYTICS -->
+        <section id="page-analytics" class="page">
+            <div class="stats-grid" style="margin-bottom: 28px;">
+                <div class="stat-card">
+                    <div class="info">
+                        <h3>Page Views</h3>
+                        <div class="number" id="stat-page-views">0</div>
+                    </div>
+                    <div class="icon-box">👁</div>
+                </div>
+                <div class="stat-card">
+                    <div class="info">
+                        <h3>Outfit Views</h3>
+                        <div class="number" id="stat-outfit-views">0</div>
+                    </div>
+                    <div class="icon-box">👗</div>
+                </div>
+                <div class="stat-card">
+                    <div class="info">
+                        <h3>Cart Additions</h3>
+                        <div class="number" id="stat-cart-adds">0</div>
+                    </div>
+                    <div class="icon-box">🛒</div>
+                </div>
+                <div class="stat-card">
+                    <div class="info">
+                        <h3>WhatsApp Checkouts</h3>
+                        <div class="number" id="stat-checkouts">0</div>
+                    </div>
+                    <div class="icon-box">💬</div>
+                </div>
+            </div>
+
+            <!-- Top Viewed Outfits -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div style="background: var(--purple-900); border-radius: var(--radius-lg); padding: 24px; border: 1px solid rgba(255,255,255,0.06);">
+                    <h3 style="color: var(--gold); margin-bottom: 16px; font-family: var(--font-display);">🔥 Most Viewed Outfits</h3>
+                    <div id="top-outfits-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="empty-state" style="padding: 16px;"><span class="icon">📈</span>No data yet.</div>
+                    </div>
+                </div>
+
+                <div style="background: var(--purple-900); border-radius: var(--radius-lg); padding: 24px; border: 1px solid rgba(255,255,255,0.06);">
+                    <h3 style="color: var(--gold); margin-bottom: 16px; font-family: var(--font-display);">📅 Daily Traffic (Last 7 Days)</h3>
+                    <div id="daily-views-chart" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div class="empty-state" style="padding: 16px;"><span class="icon">📊</span>No data yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Events Log -->
+            <div style="margin-top: 24px; background: var(--purple-900); border-radius: var(--radius-lg); padding: 24px; border: 1px solid rgba(255,255,255,0.06);">
+                <h3 style="color: var(--gold); margin-bottom: 16px; font-family: var(--font-display);">📜 Recent Activity Feed</h3>
+                <div id="recent-events-log" style="max-height: 300px; overflow-y: auto;">
+                    <div class="empty-state" style="padding: 16px;"><span class="icon">📜</span>No activity recorded yet.</div>
+                </div>
             </div>
         </section>
     </main>
@@ -1267,6 +1355,11 @@
                 document.getElementById('menu-measurements').classList.add('active');
                 document.getElementById('page-title').textContent = 'Tailoring Measurements CRM';
                 document.getElementById('header-actions').style.display = 'none';
+            } else if (pageId === 'analytics') {
+                document.getElementById('menu-analytics').classList.add('active');
+                document.getElementById('page-title').textContent = 'Analytics & Insights';
+                document.getElementById('header-actions').style.display = 'none';
+                loadAnalyticsDashboard();
             }
         }
 
@@ -1987,6 +2080,139 @@
         }
 
         // ============================================================
+        // ANALYTICS DASHBOARD
+        // ============================================================
+        async function loadAnalyticsDashboard() {
+            try {
+                const response = await fetch('http://localhost:5000/api/analytics');
+                if (!response.ok) throw new Error('Failed to load analytics');
+                const data = await response.json();
+
+                document.getElementById('stat-page-views').textContent = data.totalPageViews || 0;
+                document.getElementById('stat-cart-adds').textContent = data.totalCartAdds || 0;
+                document.getElementById('stat-checkouts').textContent = data.totalCheckouts || 0;
+
+                // Calculate total outfit views
+                const totalOutfitViews = data.topOutfits.reduce((sum, o) => sum + o.views, 0);
+                document.getElementById('stat-outfit-views').textContent = totalOutfitViews;
+
+                // Top viewed outfits
+                const topList = document.getElementById('top-outfits-list');
+                if (data.topOutfits.length === 0) {
+                    topList.innerHTML = `<div class="empty-state" style="padding: 16px;"><span class="icon">📈</span>No outfit views recorded yet.</div>`;
+                } else {
+                    const maxViews = data.topOutfits[0]?.views || 1;
+                    topList.innerHTML = data.topOutfits.map((item, i) => {
+                        const barWidth = Math.max(10, (item.views / maxViews) * 100);
+                        return `
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <span style="font-size:0.8rem; color:rgba(255,255,255,0.5); min-width:20px;">${i+1}.</span>
+                                <div style="flex:1;">
+                                    <div style="font-size:0.85rem; font-weight:600; color:var(--gold-light); margin-bottom:4px;">${item.name}</div>
+                                    <div style="background:rgba(255,255,255,0.06); border-radius:4px; height:8px; overflow:hidden;">
+                                        <div style="background:linear-gradient(90deg, var(--purple-500), var(--gold)); height:100%; width:${barWidth}%; border-radius:4px; transition:width 0.5s;"></div>
+                                    </div>
+                                </div>
+                                <span style="font-size:0.85rem; font-weight:700; color:var(--white); min-width:40px; text-align:right;">${item.views}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Daily traffic chart
+                const chartContainer = document.getElementById('daily-views-chart');
+                const last7 = data.dailyViews.slice(-7);
+                if (last7.length === 0) {
+                    chartContainer.innerHTML = `<div class="empty-state" style="padding: 16px;"><span class="icon">📊</span>No traffic data yet.</div>`;
+                } else {
+                    const maxDay = Math.max(...last7.map(d => d.views), 1);
+                    chartContainer.innerHTML = last7.map(day => {
+                        const barWidth = Math.max(5, (day.views / maxDay) * 100);
+                        const dateLabel = new Date(day.date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' });
+                        return `
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <span style="font-size:0.8rem; color:rgba(255,255,255,0.6); min-width:60px;">${dateLabel}</span>
+                                <div style="flex:1; background:rgba(255,255,255,0.06); border-radius:4px; height:10px; overflow:hidden;">
+                                    <div style="background:linear-gradient(90deg, var(--teal-500), #34D399); height:100%; width:${barWidth}%; border-radius:4px; transition:width 0.5s;"></div>
+                                </div>
+                                <span style="font-size:0.8rem; font-weight:700; color:var(--white); min-width:30px; text-align:right;">${day.views}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Recent events feed
+                const eventsLog = document.getElementById('recent-events-log');
+                if (data.recentEvents.length === 0) {
+                    eventsLog.innerHTML = `<div class="empty-state" style="padding: 16px;"><span class="icon">📜</span>No activity recorded yet.</div>`;
+                } else {
+                    const icons = { page_view: '👁', outfit_view: '👗', cart_add: '🛒', checkout: '💬' };
+                    eventsLog.innerHTML = data.recentEvents.map(ev => {
+                        const icon = icons[ev.type] || '📌';
+                        const time = new Date(ev.timestamp).toLocaleString();
+                        let detail = ev.type.replace('_', ' ');
+                        if (ev.data?.page) detail = `Visited "${ev.data.page}"`;
+                        if (ev.data?.outfitName) detail = `Viewed "${ev.data.outfitName}"`;
+                        if (ev.type === 'cart_add') detail = `Added "${ev.data?.outfitName || 'item'}" to cart`;
+                        if (ev.type === 'checkout') detail = `Checkout (${ev.data?.items || 0} items, ₦${(ev.data?.total || 0).toLocaleString()})`;
+                        return `
+                            <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+                                <span style="font-size:1.1rem;">${icon}</span>
+                                <span style="flex:1; font-size:0.85rem; color:rgba(255,255,255,0.8);">${detail}</span>
+                                <span style="font-size:0.75rem; color:rgba(255,255,255,0.4);">${time}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+            } catch (err) {
+                console.warn('Analytics load failed:', err);
+                document.getElementById('stat-page-views').textContent = '—';
+                document.getElementById('stat-outfit-views').textContent = '—';
+                document.getElementById('stat-cart-adds').textContent = '—';
+                document.getElementById('stat-checkouts').textContent = '—';
+            }
+        }
+
+        // ============================================================
+        // PASSCODE CHANGE HANDLER
+        // ============================================================
+        async function handleChangePasscode(e) {
+            e.preventDefault();
+            const currentPasscode = document.getElementById('current-passcode').value;
+            const newPasscode = document.getElementById('new-passcode').value;
+            const statusMsg = document.getElementById('passcode-status-msg');
+            statusMsg.textContent = '';
+
+            try {
+                const response = await fetch('http://localhost:5000/api/change-passcode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPasscode, newPasscode })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusMsg.style.color = 'var(--teal-500)';
+                    statusMsg.textContent = '✅ ' + data.message;
+                    document.getElementById('changePasscodeForm').reset();
+                    // Force re-login
+                    setTimeout(() => {
+                        sessionStorage.removeItem('eyiwunmi_admin_token');
+                        checkAuth();
+                    }, 2000);
+                } else {
+                    statusMsg.style.color = 'var(--red-500)';
+                    statusMsg.textContent = '❌ ' + (data.error || 'Failed to update passcode.');
+                }
+            } catch (err) {
+                statusMsg.style.color = 'var(--red-500)';
+                statusMsg.textContent = '❌ Backend server is offline.';
+            }
+        }
+
+        // ============================================================
         // INIT
         // ============================================================
         checkAuth();
@@ -1999,6 +2225,19 @@
                 syncUI();
             }
         });
+
+        // Real-time CMS listener for admin — auto-refresh all panels
+        if (isUsingSanity && sanityClientInstance) {
+            try {
+                sanityClientInstance.listen('*[_type in ["outfit", "enquiry", "measurement"]]').subscribe(update => {
+                    console.log('🔄 Real-time CMS update detected, refreshing admin panels...');
+                    syncUI();
+                });
+                console.log('👂 Admin: Listening for real-time CMS updates');
+            } catch (err) {
+                console.warn('Real-time listener not available:', err);
+            }
+        }
     </script>
 
     <!-- ===== LOGIN OVERLAY HTML ===== -->

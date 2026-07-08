@@ -13,10 +13,13 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 const configPath = path.join(__dirname, 'config.json');
-const ADMIN_PASSCODE = process.env.ADMIN_PASSCODE || 'Eyiwunmi2026';
+const analyticsPath = path.join(__dirname, 'analytics.json');
 
 let sanityClient = null;
 
+// ============================================================
+// CONFIG & SANITY INIT
+// ============================================================
 function loadPersistedConfig() {
     if (fs.existsSync(configPath)) {
         try {
@@ -30,6 +33,16 @@ function loadPersistedConfig() {
             console.error('Failed to parse config.json:', e);
         }
     }
+}
+
+function getAdminPasscode() {
+    if (fs.existsSync(configPath)) {
+        try {
+            const parsed = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            if (parsed.adminPasscode) return parsed.adminPasscode;
+        } catch (e) { /* fall through */ }
+    }
+    return process.env.ADMIN_PASSCODE || 'Eyiwunmi2026';
 }
 
 function initSanity() {
@@ -57,21 +70,69 @@ function initSanity() {
     }
 }
 
-// Initial load
 loadPersistedConfig();
 initSanity();
 
-// Admin Authentication endpoint
+// ============================================================
+// ANALYTICS HELPERS
+// ============================================================
+function loadAnalytics() {
+    if (fs.existsSync(analyticsPath)) {
+        try {
+            return JSON.parse(fs.readFileSync(analyticsPath, 'utf8'));
+        } catch (e) { /* fall through */ }
+    }
+    return { pageViews: {}, outfitViews: {}, cartAdds: 0, checkouts: 0, events: [] };
+}
+
+function saveAnalytics(data) {
+    fs.writeFileSync(analyticsPath, JSON.stringify(data, null, 2), 'utf8');
+}
+
+// ============================================================
+// AUTH ENDPOINTS
+// ============================================================
 app.post('/api/login', (req, res) => {
     const { passcode } = req.body;
-    if (passcode === ADMIN_PASSCODE) {
+    if (passcode === getAdminPasscode()) {
         res.json({ success: true, token: 'eyiwunmi_admin_authenticated_session_' + Date.now() });
     } else {
         res.status(401).json({ error: 'Invalid passcode entered.' });
     }
 });
 
-// Endpoint for admin dashboard to update config dynamically
+app.post('/api/change-passcode', (req, res) => {
+    const { currentPasscode, newPasscode } = req.body;
+
+    if (!currentPasscode || !newPasscode) {
+        return res.status(400).json({ error: 'Current and new passcodes are required.' });
+    }
+
+    if (newPasscode.length < 6) {
+        return res.status(400).json({ error: 'New passcode must be at least 6 characters.' });
+    }
+
+    if (currentPasscode !== getAdminPasscode()) {
+        return res.status(401).json({ error: 'Current passcode is incorrect.' });
+    }
+
+    try {
+        let config = {};
+        if (fs.existsSync(configPath)) {
+            config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        }
+        config.adminPasscode = newPasscode;
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+        res.json({ success: true, message: 'Passcode updated successfully.' });
+    } catch (e) {
+        console.error('Failed to update passcode:', e);
+        res.status(500).json({ error: 'Failed to save new passcode.' });
+    }
+});
+
+// ============================================================
+// CONFIG ENDPOINT
+// ============================================================
 app.post('/api/config', (req, res) => {
     const { projectId, dataset, token } = req.body;
 
@@ -80,12 +141,19 @@ app.post('/api/config', (req, res) => {
     }
 
     try {
-        fs.writeFileSync(configPath, JSON.stringify({ projectId, dataset, token }, null, 2), 'utf8');
-        
+        let config = {};
+        if (fs.existsSync(configPath)) {
+            config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        }
+        config.projectId = projectId;
+        config.dataset = dataset || 'production';
+        config.token = token || '';
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+
         process.env.SANITY_PROJECT_ID = projectId;
         process.env.SANITY_DATASET = dataset || 'production';
         process.env.SANITY_WRITE_TOKEN = token || '';
-        
+
         initSanity();
         res.json({ success: true, message: 'Server configured successfully', sanityActive: !!sanityClient });
     } catch (e) {
@@ -94,7 +162,9 @@ app.post('/api/config', (req, res) => {
     }
 });
 
-// Enquiries endpoint
+// ============================================================
+// ENQUIRIES ENDPOINT
+// ============================================================
 app.post('/api/enquiries', async (req, res) => {
     const { name, email, message } = req.body;
 
@@ -122,7 +192,9 @@ app.post('/api/enquiries', async (req, res) => {
     }
 });
 
-// Measurements submission endpoint
+// ============================================================
+// MEASUREMENTS ENDPOINT
+// ============================================================
 app.post('/api/measurements', async (req, res) => {
     const { name, email, phone, shoulder, chest, waist, hips, sleeve, length, height, notes } = req.body;
 
@@ -134,17 +206,7 @@ app.post('/api/measurements', async (req, res) => {
         try {
             const doc = {
                 _type: 'measurement',
-                name,
-                email,
-                phone,
-                shoulder,
-                chest,
-                waist,
-                hips,
-                sleeve,
-                length,
-                height,
-                notes,
+                name, email, phone, shoulder, chest, waist, hips, sleeve, length, height, notes,
                 submittedAt: new Date().toISOString()
             };
             const result = await sanityClient.create(doc);
@@ -158,6 +220,86 @@ app.post('/api/measurements', async (req, res) => {
     }
 });
 
+// ============================================================
+// ANALYTICS ENDPOINTS
+// ============================================================
+app.post('/api/analytics', (req, res) => {
+    const { type, data } = req.body;
+    const analytics = loadAnalytics();
+    const today = new Date().toISOString().split('T')[0];
+
+    switch (type) {
+        case 'page_view': {
+            const page = data?.page || 'unknown';
+            if (!analytics.pageViews[today]) analytics.pageViews[today] = {};
+            analytics.pageViews[today][page] = (analytics.pageViews[today][page] || 0) + 1;
+            break;
+        }
+        case 'outfit_view': {
+            const outfitId = String(data?.outfitId || 'unknown');
+            const name = data?.outfitName || 'Unknown';
+            if (!analytics.outfitViews[outfitId]) {
+                analytics.outfitViews[outfitId] = { name, views: 0 };
+            }
+            analytics.outfitViews[outfitId].views += 1;
+            analytics.outfitViews[outfitId].name = name;
+            break;
+        }
+        case 'cart_add':
+            analytics.cartAdds = (analytics.cartAdds || 0) + 1;
+            break;
+        case 'checkout':
+            analytics.checkouts = (analytics.checkouts || 0) + 1;
+            break;
+        default:
+            break;
+    }
+
+    // Keep a rolling log of recent events (last 200)
+    analytics.events.push({ type, data, timestamp: new Date().toISOString() });
+    if (analytics.events.length > 200) {
+        analytics.events = analytics.events.slice(-200);
+    }
+
+    saveAnalytics(analytics);
+    res.json({ success: true });
+});
+
+app.get('/api/analytics', (req, res) => {
+    const analytics = loadAnalytics();
+
+    // Compute summary stats
+    let totalPageViews = 0;
+    const dailyViews = [];
+    for (const [date, pages] of Object.entries(analytics.pageViews || {})) {
+        let dayTotal = 0;
+        for (const count of Object.values(pages)) {
+            dayTotal += count;
+        }
+        totalPageViews += dayTotal;
+        dailyViews.push({ date, views: dayTotal });
+    }
+    dailyViews.sort((a, b) => a.date.localeCompare(b.date));
+
+    // Top viewed outfits
+    const topOutfits = Object.entries(analytics.outfitViews || {})
+        .map(([id, info]) => ({ id, name: info.name, views: info.views }))
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 10);
+
+    res.json({
+        totalPageViews,
+        totalCartAdds: analytics.cartAdds || 0,
+        totalCheckouts: analytics.checkouts || 0,
+        dailyViews,
+        topOutfits,
+        recentEvents: (analytics.events || []).slice(-20).reverse()
+    });
+});
+
+// ============================================================
+// HEALTH
+// ============================================================
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', sanityActive: !!sanityClient });
 });

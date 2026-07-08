@@ -2,10 +2,25 @@
 // EWYWUNMI SHOPPING CART & CRM SYSTEM
 // ============================================================
 
+// Analytics helper — fire-and-forget event tracking
+function trackEvent(type, data) {
+    try {
+        fetch('http://localhost:5000/api/analytics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, data })
+        }).catch(() => {});
+    } catch (e) { /* silent */ }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     injectCartAndModalHTML();
     initCartNavigation();
     updateCartBadge();
+
+    // Track page view
+    const pageName = document.title.replace('Eyiwunmi Fashion – ', '').trim() || 'Home';
+    trackEvent('page_view', { page: pageName });
 });
 
 // 1. Dynamic Markup Injection
@@ -226,7 +241,10 @@ function addToCart(item, size, color) {
     }
 
     saveCart(cart);
-    
+
+    // Track cart add event
+    trackEvent('cart_add', { outfitId: item.id, outfitName: item.name, size, color });
+
     // Open cart drawer immediately for premium feedback
     toggleCartDrawer();
 }
@@ -326,6 +344,9 @@ function proceedToCartCheckout() {
         if (m.length) messageText += `- Length: ${m.length}"\n`;
         if (m.notes) messageText += `- Special Requests: ${m.notes}\n`;
     }
+
+    // Track checkout event
+    trackEvent('checkout', { items: cart.length, total: grandTotal });
 
     const encodedText = encodeURIComponent(messageText);
     window.open(`https://wa.me/2348027016178?text=${encodedText}`, '_blank');

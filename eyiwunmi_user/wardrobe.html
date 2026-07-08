@@ -651,6 +651,11 @@
             const item = outfits.find(o => o.id === id);
             if (!item) return;
 
+            // Track outfit view
+            if (typeof trackEvent === 'function') {
+                trackEvent('outfit_view', { outfitId: item.id, outfitName: item.name });
+            }
+
             document.getElementById('modalImg').src = item.image.startsWith('http') ? item.image : '../' + item.image;
             document.getElementById('modalImg').alt = item.name;
             document.getElementById('modalCategory').textContent = item.category.charAt(0).toUpperCase() + item.category.slice(1);
@@ -751,6 +756,19 @@
                 renderGallery();
             }
         });
+
+        // Real-time CMS listener — auto-refresh when outfits change in Sanity
+        if (isUsingSanity && sanityClientInstance) {
+            try {
+                const subscription = sanityClientInstance.listen('*[_type == "outfit"]').subscribe(update => {
+                    console.log('🔄 Real-time CMS update detected, refreshing wardrobe...');
+                    renderGallery();
+                });
+                console.log('👂 Listening for real-time CMS updates');
+            } catch (err) {
+                console.warn('Real-time listener not available:', err);
+            }
+        }
 
         console.log('✨ Eyiwunmi Fashion — Boutique Wardrobe Loaded.');
     </script>
