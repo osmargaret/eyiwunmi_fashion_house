@@ -11,6 +11,7 @@
     <!-- Sanity Headless CMS Client & Configuration -->
     <script src="https://unpkg.com/@sanity/client/umd/sanityClient.js"></script>
     <script src="sanity-config.js"></script>
+    <script src="cart.js"></script>
 </head>
 <body>
 
@@ -133,13 +134,26 @@
                 </div>
             </div>
 
-            <div class="modal-colors">
+            <div class="modal-colors" style="display: none;">
                 <h5>Colours Available</h5>
                 <div id="modalColours" style="display:flex; align-items:center; gap:12px; margin-top:8px;"></div>
             </div>
 
-            <div style="margin-top:32px; display:grid; grid-template-columns:1fr; gap:16px;">
-                <a href="#" class="btn-whatsapp" id="whatsappBtn" target="_blank">💬 Order on WhatsApp</a>
+            <!-- Interactive Sizing & Colors -->
+            <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <h5 style="margin-bottom: 6px;">Select Size</h5>
+                    <select id="modalSizeSelect" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ddd; font-family:var(--font-sans); background:white; color:black; font-weight:500;"></select>
+                </div>
+                <div>
+                    <h5 style="margin-bottom: 6px;">Select Color</h5>
+                    <select id="modalColorSelect" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ddd; font-family:var(--font-sans); background:white; color:black; font-weight:500;"></select>
+                </div>
+            </div>
+
+            <div style="margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <button class="btn-whatsapp" id="cartAddBtn" style="justify-content: center; background: var(--purple-700); box-shadow: 0 8px 25px rgba(107,59,140,0.25);">🛒 Add to Cart</button>
+                <a href="#" class="btn-whatsapp" id="whatsappBtn" target="_blank" style="justify-content: center;">💬 Buy Now</a>
             </div>
         </div>
     </div>
@@ -652,14 +666,39 @@
             ).join(' ');
             document.getElementById('modalColours').innerHTML = colourHtml;
 
+            // Populate Interactive Sizing Selectors
+            const sizeSelect = document.getElementById('modalSizeSelect');
+            const colorSelect = document.getElementById('modalColorSelect');
+            
+            const sizesArr = (item.sizes || 'Free Size').split(',').map(s => s.trim());
+            sizeSelect.innerHTML = sizesArr.map(s => `<option value="${s}">${s}</option>`).join('');
+            colorSelect.innerHTML = item.colours.map(c => `<option value="${c}">${c}</option>`).join('');
+
             document.getElementById('modalSizes').textContent = item.sizes;
             document.getElementById('modalFabric').textContent = item.fabric;
             document.getElementById('modalAvailability').textContent = item.availability;
 
-            const waMsg = encodeURIComponent(
-                `Hi Eyiwunmi Fashion! I'm interested in "${item.name}" (${item.price}). Please let me know more.`
-            );
-            document.getElementById('whatsappBtn').href = `https://wa.me/2348027016178?text=${waMsg}`;
+            const updateWaLink = () => {
+                const selectedSize = sizeSelect.value;
+                const selectedColor = colorSelect.value;
+                const waMsg = encodeURIComponent(
+                    `Hi Eyiwunmi Fashion! ✦\nI would like to order this bespoke piece:\n- *${item.name}*\n- Size: ${selectedSize}\n- Color: ${selectedColor}\n- Price: ${item.price}`
+                );
+                document.getElementById('whatsappBtn').href = `https://wa.me/2348027016178?text=${waMsg}`;
+            };
+
+            sizeSelect.onchange = updateWaLink;
+            colorSelect.onchange = updateWaLink;
+            updateWaLink();
+
+            // Wire Add to Cart Button
+            const cartAddBtn = document.getElementById('cartAddBtn');
+            cartAddBtn.onclick = () => {
+                const selectedSize = sizeSelect.value;
+                const selectedColor = colorSelect.value;
+                addToCart(item, selectedSize, selectedColor);
+                closeModalFn();
+            };
 
             modalOverlay.classList.add('open');
             document.body.style.overflow = 'hidden';

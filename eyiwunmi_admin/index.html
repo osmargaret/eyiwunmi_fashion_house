@@ -6,6 +6,10 @@
     <title>Eyiwunmi Fashion – Admin Dashboard</title>
     <link rel="icon" type="image/png" href="../eyiwunmi_images/LOGO_FAVICON.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Sanity Headless CMS Client & Configuration -->
+    <script src="https://unpkg.com/@sanity/client/umd/sanityClient.js"></script>
+    <script src="../eyiwunmi_user/sanity-config.js"></script>
     <style>
         /* ===== CSS VARIABLES ===== */
         :root {
@@ -635,6 +639,18 @@
                     <span>Inbox</span>
                 </a>
             </li>
+            <li class="menu-item" id="menu-measurements">
+                <a href="#" onclick="showPage('measurements')">
+                    <span class="icon">📐</span>
+                    <span>Measurements</span>
+                </a>
+            </li>
+            <li class="menu-item" id="menu-cms">
+                <a href="#" onclick="showPage('cms')">
+                    <span class="icon">⚙️</span>
+                    <span>CMS Settings</span>
+                </a>
+            </li>
         </ul>
         <div class="sidebar-footer">
             Admin v1.0 &copy; 2026
@@ -723,6 +739,69 @@
             </div>
             <div id="inbox-messages" class="msg-list">
                 <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- PAGE 4: CMS SETTINGS -->
+        <section id="page-cms" class="page">
+            <div class="table-container" style="padding: 28px; background: var(--purple-900);">
+                <h2 style="font-family: var(--font-display); font-size: 1.6rem; color: var(--gold-light); margin-bottom: 8px;">Sanity.io Integration Settings</h2>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 24px;">Configure your Sanity.io credentials to sync inventory in real-time.</p>
+                
+                <form id="cmsConfigForm" onsubmit="saveCmsConfig(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="cms-project-id">Sanity Project ID</label>
+                            <input type="text" id="cms-project-id" placeholder="e.g. ab34ef79" />
+                        </div>
+                        <div class="form-group">
+                            <label for="cms-dataset">Dataset</label>
+                            <input type="text" id="cms-dataset" placeholder="production" value="production" />
+                        </div>
+                        <div class="form-group form-full">
+                            <label for="cms-token">Sanity API Write Token (Required for CRUD modifications)</label>
+                            <input type="password" id="cms-token" placeholder="sk..." />
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 10px;">
+                        <button type="submit" class="btn-primary">Save Settings</button>
+                        <button type="button" class="btn-secondary" onclick="clearCmsConfig()">Reset to Local Database</button>
+                    </div>
+                </form>
+
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 32px 0;" />
+
+                <h3 style="color: var(--gold); margin-bottom: 12px;">Database Utilities & Sync</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">
+                    If you have existing outfits in your local storage, you can sync/migrate them directly to your Sanity.io CMS.
+                    This will create the corresponding documents under the <code style="color: var(--purple-500);">outfit</code> schema type.
+                </p>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="btn-primary" id="btn-sync-now" onclick="syncLocalToSanity()" style="background: linear-gradient(135deg, var(--teal-500), #059669);">🔄 Sync Local to Sanity</button>
+                    <div id="sync-status-msg" style="font-weight: 500; font-size: 0.9rem; color: var(--purple-500);"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: MEASUREMENTS CRM -->
+        <section id="page-measurements" class="page">
+            <div class="table-container" style="background: var(--purple-900);">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Contact</th>
+                            <th>Shoulder/Chest</th>
+                            <th>Waist/Hips</th>
+                            <th>Sleeve/Length</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="measurements-table-body">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>
@@ -1090,6 +1169,73 @@
         // ============================================================
         // STATE NAVIGATION
         // ============================================================
+        // ============================================================
+        // SANITY INTEGRATION INITIALIZER & HELPERS
+        // ============================================================
+        let isUsingSanity = false;
+        let sanityClientInstance = null;
+        let currentOutfits = [];
+        let currentMessages = [];
+
+        function initSanity() {
+            if (typeof SANITY_CONFIG !== 'undefined' && SANITY_CONFIG.projectId) {
+                try {
+                    const config = { ...SANITY_CONFIG };
+                    if (SANITY_CONFIG.token) {
+                        config.token = SANITY_CONFIG.token;
+                        config.useCdn = false;
+                    }
+                    sanityClientInstance = SanityClient.createClient(config);
+                    isUsingSanity = true;
+                    console.log('🔌 Connected to Sanity.io Headless CMS');
+                } catch (err) {
+                    console.error('Failed to initialize Sanity Client:', err);
+                    isUsingSanity = false;
+                    sanityClientInstance = null;
+                }
+            } else {
+                isUsingSanity = false;
+                sanityClientInstance = null;
+            }
+        }
+
+        // Initialize immediately
+        initSanity();
+
+        async function syncSavedConfigToBackend() {
+            const savedConfig = localStorage.getItem('eyiwunmi_sanity_config');
+            if (savedConfig) {
+                try {
+                    await fetch('http://localhost:5000/api/config', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: savedConfig
+                    });
+                    console.log('✅ Synchronized CMS credentials to local backend.');
+                } catch (err) {
+                    console.log('Backend server not reachable to sync configuration (offline).');
+                }
+            }
+        }
+
+        async function uploadLocalImageToSanity(imagePath) {
+            if (!sanityClientInstance) return null;
+            try {
+                const relativeUrl = '../' + imagePath;
+                const response = await fetch(relativeUrl);
+                const blob = await response.blob();
+                const filename = imagePath.split('/').pop();
+                const asset = await sanityClientInstance.assets.upload('image', blob, { filename });
+                return asset;
+            } catch (e) {
+                console.error('Failed to upload image asset:', e);
+                throw new Error('Image upload failed: ' + e.message);
+            }
+        }
+
+        // ============================================================
+        // STATE NAVIGATION
+        // ============================================================
         function showPage(pageId) {
             // Hide all pages
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1112,22 +1258,116 @@
                 document.getElementById('menu-inbox').classList.add('active');
                 document.getElementById('page-title').textContent = 'Customer Inbox';
                 document.getElementById('header-actions').style.display = 'none';
+            } else if (pageId === 'cms') {
+                document.getElementById('menu-cms').classList.add('active');
+                document.getElementById('page-title').textContent = 'CMS Configuration';
+                document.getElementById('header-actions').style.display = 'none';
+                loadCmsConfigFields();
+            } else if (pageId === 'measurements') {
+                document.getElementById('menu-measurements').classList.add('active');
+                document.getElementById('page-title').textContent = 'Tailoring Measurements CRM';
+                document.getElementById('header-actions').style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        // LOCAL STORAGE MANAGEMENT
+        // ============================================================
+        function getOutfitsLocal() {
+            if (!localStorage.getItem('eyiwunmi_outfits')) {
+                localStorage.setItem('eyiwunmi_outfits', JSON.stringify(defaultOutfits));
+            }
+            return JSON.parse(localStorage.getItem('eyiwunmi_outfits'));
+        }
+
+        function getMessagesLocal() {
+            return JSON.parse(localStorage.getItem('eyiwunmi_messages') || '[]');
+        }
+
+        function getMeasurementsLocalList() {
+            return JSON.parse(localStorage.getItem('eyiwunmi_measurements_local') || '[]');
+        }
+
+        async function loadOutfits() {
+            if (isUsingSanity && sanityClientInstance) {
+                try {
+                    const sanityOutfits = await sanityClientInstance.fetch(`*[_type == "outfit"] | order(id asc) {
+                        id, name, category, "image": image.asset->url, price, oldPrice, description, colours, sizes, fabric, availability, badge, badgeText
+                    }`);
+                    if (sanityOutfits && sanityOutfits.length > 0) {
+                        currentOutfits = sanityOutfits;
+                        localStorage.setItem('eyiwunmi_outfits', JSON.stringify(currentOutfits));
+                    } else {
+                        currentOutfits = getOutfitsLocal();
+                    }
+                } catch (err) {
+                    console.error('Sanity fetch failed, falling back to local database:', err);
+                    currentOutfits = getOutfitsLocal();
+                }
+            } else {
+                currentOutfits = getOutfitsLocal();
+            }
+        }
+
+        async function loadMessages() {
+            if (isUsingSanity && sanityClientInstance) {
+                try {
+                    const sanityEnquiries = await sanityClientInstance.fetch(`*[_type == "enquiry"] | order(submittedAt desc) {
+                        _id, name, email, message, submittedAt
+                    }`);
+                    currentMessages = sanityEnquiries.map(item => ({
+                        id: item._id,
+                        name: item.name,
+                        email: item.email,
+                        message: item.message,
+                        date: new Date(item.submittedAt).toLocaleString()
+                    }));
+                    localStorage.setItem('eyiwunmi_messages', JSON.stringify(currentMessages));
+                } catch (err) {
+                    console.error('Sanity enquiries fetch failed, falling back to local storage:', err);
+                    currentMessages = getMessagesLocal();
+                }
+            } else {
+                currentMessages = getMessagesLocal();
+            }
+        }
+
+        let currentMeasurementsList = [];
+
+        async function loadMeasurementsList() {
+            if (isUsingSanity && sanityClientInstance) {
+                try {
+                    const sanityMeasurements = await sanityClientInstance.fetch(`*[_type == "measurement"] | order(submittedAt desc) {
+                        _id, name, email, phone, shoulder, chest, waist, hips, sleeve, length, height, notes, submittedAt
+                    }`);
+                    currentMeasurementsList = sanityMeasurements;
+                    localStorage.setItem('eyiwunmi_measurements_local', JSON.stringify(currentMeasurementsList));
+                } catch (err) {
+                    console.error('Sanity measurements fetch failed:', err);
+                    currentMeasurementsList = getMeasurementsLocalList();
+                }
+            } else {
+                currentMeasurementsList = getMeasurementsLocalList();
             }
         }
 
         // ============================================================
         // RENDERING & DATA UPDATE
         // ============================================================
-        function syncUI() {
-            const outfits = getOutfits();
-            const messages = getMessages();
+        async function syncUI() {
+            await loadOutfits();
+            await loadMessages();
+            await loadMeasurementsList();
+            const outfits = currentOutfits;
+            const messages = currentMessages;
+            const measurements = currentMeasurementsList;
 
             // 1. Dashboard stock stats
             document.getElementById('stat-total-outfits').textContent = outfits.length;
             
             // Count categories
             const traditionalCount = outfits.filter(o => o.category === 'asoebi' || o.category === 'kids').length;
-            const suitCount = outfits.filter(o => o.category === 'men' && o.image.includes('suit') || o.name.toLowerCase().includes('suit')).length;
+            const suitCount = outfits.filter(o => o.category === 'men' && (o.image && o.image.includes('suit')) || o.name.toLowerCase().includes('suit')).length;
             document.getElementById('stat-total-traditional').textContent = traditionalCount;
             document.getElementById('stat-total-suits').textContent = suitCount;
             document.getElementById('stat-total-inbox').textContent = messages.length;
@@ -1137,10 +1377,12 @@
             if (outfits.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="7" class="empty-state"><span class="icon">👗</span>No outfits in stock. Add one now!</td></tr>`;
             } else {
-                tableBody.innerHTML = outfits.map(item => `
+                tableBody.innerHTML = outfits.map(item => {
+                    const imgUrl = (item.image && item.image.startsWith('http')) ? item.image : '../' + item.image;
+                    return `
                     <tr>
                         <td>
-                            <img src="../${item.image}" class="img-cell" onerror="this.src='../eyiwunmi_images/LOGO_FAVICON.png'" alt="Product Image" />
+                            <img src="${imgUrl}" class="img-cell" onerror="this.src='../eyiwunmi_images/LOGO_FAVICON.png'" alt="Product Image" />
                         </td>
                         <td style="font-weight: 600; color: var(--gold-light);">${item.name}</td>
                         <td style="text-transform: capitalize;">${item.category}</td>
@@ -1154,7 +1396,7 @@
                             <button class="btn-action delete" onclick="deleteOutfit(${item.id})">🗑️ Delete</button>
                         </td>
                     </tr>
-                `).join('');
+                `}).join('');
             }
 
             // 3. Inbox messages
@@ -1167,9 +1409,11 @@
                 recentInbox.innerHTML = emptyHTML;
             } else {
                 // Populate full inbox
-                inboxContainer.innerHTML = messages.map((msg, index) => `
+                inboxContainer.innerHTML = messages.map((msg, index) => {
+                    const deleteParam = (isUsingSanity && msg.id) ? `'${msg.id}'` : index;
+                    return `
                     <div class="msg-card">
-                        <button class="btn-delete-msg" onclick="deleteMessage(${index})">✕</button>
+                        <button class="btn-delete-msg" onclick="deleteMessage(${deleteParam})">✕</button>
                         <div class="msg-header">
                             <span class="sender-name">${msg.name}</span>
                             <span class="date">${msg.date}</span>
@@ -1177,7 +1421,7 @@
                         <div class="sender-meta">📧 ${msg.email}</div>
                         <p class="msg-text">${msg.message}</p>
                     </div>
-                `).join('');
+                `}).join('');
 
                 // Populate dashboard recent preview (up to 3 messages)
                 const sortedRecent = [...messages].reverse().slice(0, 3);
@@ -1191,6 +1435,43 @@
                         <p class="msg-text" style="padding: 8px 12px; font-size:0.9rem;">${msg.message}</p>
                     </div>
                 `).join('');
+            }
+
+            // 4. Measurements CRM Table
+            const measurementsBody = document.getElementById('measurements-table-body');
+            if (measurementsBody) {
+                if (measurements.length === 0) {
+                    measurementsBody.innerHTML = `<tr><td colspan="7" class="empty-state"><span class="icon">📐</span>No client measurement sheets found.</td></tr>`;
+                } else {
+                    measurementsBody.innerHTML = measurements.map((item, index) => {
+                        const deleteParam = (isUsingSanity && item._id) ? `'${item._id}'` : index;
+                        return `
+                        <tr>
+                            <td style="font-weight: 600; color: var(--gold-light);">${item.name}</td>
+                            <td>
+                                <div>📧 ${item.email}</div>
+                                <div style="font-size: 0.8rem; opacity: 0.7;">📞 ${item.phone}</div>
+                            </td>
+                            <td>
+                                <div>Sh: ${item.shoulder || '-'} "</div>
+                                <div>Ch: ${item.chest || '-'} "</div>
+                            </td>
+                            <td>
+                                <div>Waist: ${item.waist || '-'} "</div>
+                                <div>Hips: ${item.hips || '-'} "</div>
+                            </td>
+                            <td>
+                                <div>Sl: ${item.sleeve || '-'} "</div>
+                                <div>Ln: ${item.length || '-'} "</div>
+                            </td>
+                            <td style="font-size: 0.8rem; opacity: 0.75;">${new Date(item.submittedAt || Date.now()).toLocaleDateString()}</td>
+                            <td>
+                                <button class="btn-action edit" onclick="viewMeasurementNotes(${index})" style="background: rgba(167, 139, 250, 0.15); color: var(--purple-500); border-color: rgba(167, 139, 250, 0.3);">👁 View Notes</button>
+                                <button class="btn-action delete" onclick="deleteMeasurementCard(${deleteParam})">🗑️ Delete</button>
+                            </td>
+                        </tr>
+                    `}).join('');
+                }
             }
         }
 
@@ -1208,7 +1489,7 @@
         }
 
         function openEditModal(id) {
-            const outfits = getOutfits();
+            const outfits = currentOutfits.length > 0 ? currentOutfits : getOutfitsLocal();
             const item = outfits.find(o => o.id === id);
             if (!item) return;
 
@@ -1219,15 +1500,14 @@
             document.getElementById('form-price').value = item.price;
             document.getElementById('form-oldPrice').value = item.oldPrice || '';
             
-            // Extract filename from path (e.g. "eyiwunmi_images/WhatsApp.jpeg" -> "WhatsApp.jpeg")
-            const imgFilename = item.image.replace('eyiwunmi_images/', '');
+            const imgFilename = item.image ? item.image.replace('eyiwunmi_images/', '') : '';
             document.getElementById('form-image').value = imgFilename;
             
             document.getElementById('form-badge').value = item.badge || '';
-            document.getElementById('form-fabric').value = item.fabric;
-            document.getElementById('form-sizes').value = item.sizes;
-            document.getElementById('form-colours').value = item.colours.join(', ');
-            document.getElementById('form-description').value = item.description;
+            document.getElementById('form-fabric').value = item.fabric || '';
+            document.getElementById('form-sizes').value = item.sizes || '';
+            document.getElementById('form-colours').value = Array.isArray(item.colours) ? item.colours.join(', ') : (item.colours || '');
+            document.getElementById('form-description').value = item.description || '';
 
             outfitModal.classList.add('active');
         }
@@ -1236,7 +1516,7 @@
             outfitModal.classList.remove('active');
         }
 
-        function saveOutfitForm(e) {
+        async function saveOutfitForm(e) {
             e.preventDefault();
             const idVal = document.getElementById('form-outfit-id').value;
             const name = document.getElementById('form-name').value.trim();
@@ -1247,96 +1527,496 @@
             const badge = document.getElementById('form-badge').value;
             const fabric = document.getElementById('form-fabric').value.trim();
             const sizes = document.getElementById('form-sizes').value.trim();
-            
-            // Format colours from comma-separated string to Array
             const colours = document.getElementById('form-colours').value.split(',')
                                     .map(s => s.trim())
                                     .filter(s => s.length > 0);
-
             const description = document.getElementById('form-description').value.trim();
 
-            const outfits = getOutfits();
-
-            // Set badge text matching badge value
             let badgeText = null;
             if (badge) {
                 badgeText = badge.charAt(0).toUpperCase() + badge.slice(1);
             }
 
-            const outfitData = {
-                name,
-                category,
-                image: 'eyiwunmi_images/' + imageFile,
-                price,
-                oldPrice,
-                colours,
-                sizes,
-                fabric,
-                availability: 'In Stock',
-                badge: badge || null,
-                badgeText,
-                description
-            };
+            const localImagePath = 'eyiwunmi_images/' + imageFile;
 
-            if (idVal) {
-                // Edit mode
-                const targetId = parseInt(idVal);
-                const index = outfits.findIndex(o => o.id === targetId);
-                if (index !== -1) {
-                    outfits[index] = { ...outfits[index], ...outfitData };
+            if (isUsingSanity && sanityClientInstance) {
+                if (!SANITY_CONFIG.token) {
+                    alert('⚠️ A Sanity API Write Token is required to save changes to Sanity. Please add it under the "CMS Settings" tab.');
+                    return;
+                }
+
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const origText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving to Sanity...';
+
+                try {
+                    const asset = await uploadLocalImageToSanity(localImagePath);
+                    if (!asset || !asset._id) {
+                        throw new Error('Image upload failed.');
+                    }
+
+                    const docData = {
+                        _type: 'outfit',
+                        id: idVal ? parseInt(idVal) : Date.now(),
+                        name,
+                        category,
+                        image: {
+                            _type: 'image',
+                            asset: {
+                                _type: 'reference',
+                                _ref: asset._id
+                            }
+                        },
+                        price,
+                        oldPrice,
+                        colours,
+                        sizes,
+                        fabric,
+                        availability: 'In Stock',
+                        badge: badge || null,
+                        badgeText: badgeText || null,
+                        description
+                    };
+
+                    if (idVal) {
+                        const targetId = parseInt(idVal);
+                        const existingDocs = await sanityClientInstance.fetch(
+                            `*[_type == "outfit" && id == $id]`, 
+                            { id: targetId }
+                        );
+
+                        if (existingDocs && existingDocs.length > 0) {
+                            await sanityClientInstance.patch(existingDocs[0]._id).set(docData).commit();
+                        } else {
+                            await sanityClientInstance.create(docData);
+                        }
+                    } else {
+                        await sanityClientInstance.create(docData);
+                    }
+
+                    closeOutfitModal();
+                    await syncUI();
+                } catch (err) {
+                    console.error(err);
+                    alert('Error saving to Sanity: ' + err.message);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = origText;
                 }
             } else {
-                // Add mode
-                // Find next available ID
-                const nextId = outfits.length > 0 ? Math.max(...outfits.map(o => o.id)) + 1 : 1;
-                outfits.push({
-                    id: nextId,
-                    ...outfitData
-                });
-            }
+                const outfits = getOutfitsLocal();
+                const outfitData = {
+                    name,
+                    category,
+                    image: localImagePath,
+                    price,
+                    oldPrice,
+                    colours,
+                    sizes,
+                    fabric,
+                    availability: 'In Stock',
+                    badge: badge || null,
+                    badgeText,
+                    description
+                };
 
-            saveOutfits(outfits);
-            closeOutfitModal();
+                if (idVal) {
+                    const targetId = parseInt(idVal);
+                    const index = outfits.findIndex(o => o.id === targetId);
+                    if (index !== -1) {
+                        outfits[index] = { ...outfits[index], ...outfitData };
+                    }
+                } else {
+                    const nextId = outfits.length > 0 ? Math.max(...outfits.map(o => o.id)) + 1 : 1;
+                    outfits.push({
+                        id: nextId,
+                        ...outfitData
+                    });
+                }
+
+                localStorage.setItem('eyiwunmi_outfits', JSON.stringify(outfits));
+                syncUI();
+                closeOutfitModal();
+            }
         }
 
-        function deleteOutfit(id) {
+        async function deleteOutfit(id) {
             if (confirm('Are you sure you want to remove this outfit from the inventory?')) {
-                const outfits = getOutfits();
-                const filtered = outfits.filter(o => o.id !== id);
-                saveOutfits(filtered);
+                if (isUsingSanity && sanityClientInstance) {
+                    if (!SANITY_CONFIG.token) {
+                        alert('⚠️ A Sanity API Write Token is required to delete changes from Sanity. Please add it under the "CMS Settings" tab.');
+                        return;
+                    }
+
+                    try {
+                        const existingDocs = await sanityClientInstance.fetch(
+                            `*[_type == "outfit" && id == $id]`, 
+                            { id }
+                        );
+                        if (existingDocs && existingDocs.length > 0) {
+                            for (const doc of existingDocs) {
+                                await sanityClientInstance.delete(doc._id);
+                            }
+                        }
+                        await syncUI();
+                    } catch (err) {
+                        console.error(err);
+                        alert('Failed to delete from Sanity: ' + err.message);
+                    }
+                } else {
+                    const outfits = getOutfitsLocal();
+                    const filtered = outfits.filter(o => o.id !== id);
+                    localStorage.setItem('eyiwunmi_outfits', JSON.stringify(filtered));
+                    syncUI();
+                }
+            }
+        }
+
+        // ============================================================
+        // CMS CONFIGURATION FORM
+        // ============================================================
+        async function saveCmsConfig(e) {
+            e.preventDefault();
+            const projectId = document.getElementById('cms-project-id').value.trim();
+            const dataset = document.getElementById('cms-dataset').value.trim() || 'production';
+            const token = document.getElementById('cms-token').value.trim();
+
+            if (!projectId) {
+                alert('Please enter a valid Sanity Project ID.');
+                return;
+            }
+
+            const configObj = {
+                projectId,
+                dataset,
+                token
+            };
+
+            // 1. Save locally
+            localStorage.setItem('eyiwunmi_sanity_config', JSON.stringify(configObj));
+            
+            SANITY_CONFIG.projectId = projectId;
+            SANITY_CONFIG.dataset = dataset;
+            SANITY_CONFIG.token = token;
+
+            initSanity();
+
+            // 2. Sync to Express backend dynamically
+            try {
+                const res = await fetch('http://localhost:5000/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(configObj)
+                });
+                if (res.ok) {
+                    console.log('✅ Synchronized CMS credentials to local backend.');
+                }
+            } catch (err) {
+                console.warn('Backend server was not reachable to sync credentials:', err);
+            }
+
+            await syncUI();
+            alert('CMS Settings saved successfully! Connection updated.');
+        }
+
+        async function clearCmsConfig() {
+            if (confirm('Are you sure you want to reset to the local database? This will clear Sanity credentials.')) {
+                localStorage.removeItem('eyiwunmi_sanity_config');
+                document.getElementById('cms-project-id').value = '';
+                document.getElementById('cms-dataset').value = 'production';
+                document.getElementById('cms-token').value = '';
+
+                SANITY_CONFIG.projectId = '';
+                SANITY_CONFIG.token = '';
+
+                initSanity();
+
+                // Clear config on backend
+                try {
+                    await fetch('http://localhost:5000/api/config', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ projectId: '', dataset: '', token: '' })
+                    });
+                } catch (err) {
+                    console.warn('Backend server not reachable to clear config:', err);
+                }
+
+                await syncUI();
+                alert('CMS Settings reset. Using fallback local database.');
+            }
+        }
+
+        function loadCmsConfigFields() {
+            const savedConfig = localStorage.getItem('eyiwunmi_sanity_config');
+            if (savedConfig) {
+                const parsed = JSON.parse(savedConfig);
+                document.getElementById('cms-project-id').value = parsed.projectId || '';
+                document.getElementById('cms-dataset').value = parsed.dataset || 'production';
+                document.getElementById('cms-token').value = parsed.token || '';
+            }
+        }
+
+        // ============================================================
+        // BULK SYNC UTILITY
+        // ============================================================
+        async function syncLocalToSanity() {
+            if (!isUsingSanity || !sanityClientInstance) {
+                alert('Please configure and save your Sanity Settings before syncing.');
+                return;
+            }
+            if (!SANITY_CONFIG.token) {
+                alert('A Sanity API Write Token is required to sync outfits. Please add it under settings.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-sync-now');
+            const msg = document.getElementById('sync-status-msg');
+            const localOutfits = getOutfitsLocal();
+
+            if (localOutfits.length === 0) {
+                alert('No local outfits found to sync.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Syncing... ⏳';
+            msg.style.color = 'var(--purple-500)';
+            msg.textContent = 'Starting sync operation...';
+
+            let count = 0;
+            try {
+                for (const item of localOutfits) {
+                    msg.textContent = `Syncing item ${count + 1}/${localOutfits.length}: "${item.name}"...`;
+                    
+                    const asset = await uploadLocalImageToSanity(item.image);
+                    if (!asset || !asset._id) {
+                        throw new Error(`Failed to upload image for ${item.name}`);
+                    }
+
+                    const docData = {
+                        _type: 'outfit',
+                        id: item.id,
+                        name: item.name,
+                        category: item.category,
+                        image: {
+                            _type: 'image',
+                            asset: {
+                                _type: 'reference',
+                                _ref: asset._id
+                            }
+                        },
+                        price: item.price,
+                        oldPrice: item.oldPrice,
+                        colours: item.colours,
+                        sizes: item.sizes,
+                        fabric: item.fabric,
+                        availability: item.availability || 'In Stock',
+                        badge: item.badge || null,
+                        badgeText: item.badgeText || null,
+                        description: item.description
+                    };
+
+                    const existingDocs = await sanityClientInstance.fetch(
+                        `*[_type == "outfit" && id == $id]`, 
+                        { id: item.id }
+                    );
+
+                    if (existingDocs && existingDocs.length > 0) {
+                        await sanityClientInstance.patch(existingDocs[0]._id).set(docData).commit();
+                    } else {
+                        await sanityClientInstance.create(docData);
+                    }
+                    count++;
+                }
+
+                msg.style.color = 'var(--teal-500)';
+                msg.textContent = `✅ Successfully synced ${count} outfits to Sanity!`;
+                await syncUI();
+            } catch (err) {
+                console.error(err);
+                msg.style.color = 'var(--red-500)';
+                msg.textContent = `❌ Sync failed at item ${count + 1}: ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Sync Local to Sanity';
             }
         }
 
         // ============================================================
         // MESSAGES ACTIONS
         // ============================================================
-        function deleteMessage(index) {
+        async function deleteMessage(idOrIndex) {
             if (confirm('Remove this message from your inbox?')) {
-                const messages = getMessages();
-                messages.splice(index, 1);
-                saveMessages(messages);
+                if (isUsingSanity && sanityClientInstance) {
+                    if (!SANITY_CONFIG.token) {
+                        alert('⚠️ A Sanity API Write Token is required to delete messages.');
+                        return;
+                    }
+                    try {
+                        let docId = idOrIndex;
+                        if (typeof idOrIndex === 'number') {
+                            docId = currentMessages[idOrIndex].id;
+                        }
+                        await sanityClientInstance.delete(docId);
+                        await syncUI();
+                    } catch (err) {
+                        console.error('Failed to delete enquiry:', err);
+                        alert('Failed to delete enquiry: ' + err.message);
+                    }
+                } else {
+                    const messages = getMessagesLocal();
+                    const index = typeof idOrIndex === 'number' ? idOrIndex : messages.findIndex(m => m.id === idOrIndex);
+                    if (index !== -1) {
+                        messages.splice(index, 1);
+                        localStorage.setItem('eyiwunmi_messages', JSON.stringify(messages));
+                        syncUI();
+                    }
+                }
             }
         }
 
-        function clearAllMessages() {
+        async function clearAllMessages() {
             if (confirm('Are you sure you want to permanently clear the entire inbox?')) {
-                saveMessages([]);
+                if (isUsingSanity && sanityClientInstance) {
+                    if (!SANITY_CONFIG.token) {
+                        alert('⚠️ A Sanity API Write Token is required to clear messages.');
+                        return;
+                    }
+                    try {
+                        const enquiries = await sanityClientInstance.fetch(`*[_type == "enquiry"] { _id }`);
+                        for (const doc of enquiries) {
+                            await sanityClientInstance.delete(doc._id);
+                        }
+                        await syncUI();
+                    } catch (err) {
+                        console.error(err);
+                        alert('Failed to clear messages: ' + err.message);
+                    }
+                } else {
+                    localStorage.setItem('eyiwunmi_messages', JSON.stringify([]));
+                    syncUI();
+                }
+            }
+        }
+
+        // ============================================================
+        // MEASUREMENTS CRM ACTIONS
+        // ============================================================
+        function viewMeasurementNotes(index) {
+            const item = currentMeasurementsList[index];
+            alert(`Client: ${item.name}\nHeight: ${item.height || 'N/A'}\n\nNotes:\n${item.notes || 'No extra notes provided.'}`);
+        }
+
+        async function deleteMeasurementCard(idOrIndex) {
+            if (confirm('Delete this client measurement card?')) {
+                if (isUsingSanity && sanityClientInstance) {
+                    if (!SANITY_CONFIG.token) {
+                        alert('⚠️ A Sanity API Write Token is required to delete measurements.');
+                        return;
+                    }
+                    try {
+                        let docId = idOrIndex;
+                        if (typeof idOrIndex === 'number') {
+                            docId = currentMeasurementsList[idOrIndex]._id;
+                        }
+                        await sanityClientInstance.delete(docId);
+                        await syncUI();
+                    } catch (err) {
+                        console.error(err);
+                        alert('Failed to delete measurement card: ' + err.message);
+                    }
+                } else {
+                    const items = getMeasurementsLocalList();
+                    const index = typeof idOrIndex === 'number' ? idOrIndex : items.findIndex(m => m._id === idOrIndex);
+                    if (index !== -1) {
+                        items.splice(index, 1);
+                        localStorage.setItem('eyiwunmi_measurements_local', JSON.stringify(items));
+                        syncUI();
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // AUTHENTICATION & LOGIN FORM
+        // ============================================================
+        function checkAuth() {
+            const token = sessionStorage.getItem('eyiwunmi_admin_token');
+            const loginOverlay = document.getElementById('loginOverlay');
+            if (token) {
+                loginOverlay.style.setProperty('display', 'none', 'important');
+            } else {
+                loginOverlay.style.setProperty('display', 'flex', 'important');
+            }
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const passcode = document.getElementById('login-passcode').value;
+            const errorMsg = document.getElementById('login-error-msg');
+            errorMsg.textContent = '';
+
+            try {
+                const response = await fetch('http://localhost:5000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passcode })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionStorage.setItem('eyiwunmi_admin_token', data.token);
+                    checkAuth();
+                    syncUI();
+                } else {
+                    const err = await response.json();
+                    errorMsg.textContent = err.error || 'Authentication failed.';
+                }
+            } catch (err) {
+                console.error(err);
+                if (passcode === 'Eyiwunmi2026') {
+                    sessionStorage.setItem('eyiwunmi_admin_token', 'local_authenticated');
+                    checkAuth();
+                    syncUI();
+                } else {
+                    errorMsg.textContent = 'Backend offline. Enter correct passcode (Eyiwunmi2026).';
+                }
             }
         }
 
         // ============================================================
         // INIT
         // ============================================================
-        // Trigger initialization
+        checkAuth();
+        syncSavedConfigToBackend();
         syncUI();
         showPage('dashboard');
 
-        // Storage sync listener for real-time tab updates
         window.addEventListener('storage', (e) => {
-            if (e.key === 'eyiwunmi_outfits' || e.key === 'eyiwunmi_messages') {
+            if (e.key === 'eyiwunmi_outfits' || e.key === 'eyiwunmi_messages' || e.key === 'eyiwunmi_measurements_local') {
                 syncUI();
             }
         });
     </script>
+
+    <!-- ===== LOGIN OVERLAY HTML ===== -->
+    <div id="loginOverlay" class="modal-overlay" style="display: flex; background: var(--purple-950); backdrop-filter: blur(12px); z-index: 99999;">
+        <div class="modal-box" style="max-width: 400px; padding: 40px; border: 1px solid rgba(255,255,255,0.15); background: var(--purple-900); text-align: center;">
+            <img src="../eyiwunmi_images/logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 24px;" />
+            <h2 style="font-family: var(--font-display); color: var(--white); font-size: 1.8rem; margin-bottom: 8px;">Eyiwunmi <span>✦</span></h2>
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 32px;">Bespoke Admin Portal Access</p>
+            
+            <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label for="login-passcode" style="color: var(--gold-light); margin-bottom: 8px;">Enter Admin Passcode</label>
+                    <input type="password" id="login-passcode" placeholder="••••••••" required style="text-align: center; font-size: 1.2rem; tracking: 2px;" />
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 16px; padding: 12px;">Unlock Portal</button>
+                <div id="login-error-msg" style="color: var(--red-500); margin-top: 12px; font-size: 0.85rem; font-weight: 500;"></div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
