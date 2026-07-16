@@ -11,5 +11,5 @@ yarn-error.log*
 dist/
 .sanity/
 eyiwunmi_backend/config.json
-eyiwunmi_studio/dist/
+eyiwunmi_studio/
 scratch/
