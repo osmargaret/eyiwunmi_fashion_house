@@ -43,7 +43,6 @@ function GlobalLayout() {
           aria-label="Chat on WhatsApp"
         >
           <span className="wa-icon">💬</span>
-          <span className="wa-number">+234 802 701 6178</span>
         </a>
       )}
     </>

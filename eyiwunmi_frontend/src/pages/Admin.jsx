@@ -12,6 +12,7 @@ export default function Admin() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [searchTerm, setSearchTerm] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [enquiries, setEnquiries] = useState([]);
   const [measurements, setMeasurements] = useState([]);
   const [analytics, setAnalytics] = useState({
@@ -397,45 +398,92 @@ export default function Admin() {
 
   return (
     <div className="admin-body">
+      {/* MOBILE TOP BAR */}
+      <div className="admin-mobile-top-bar">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              fontSize: '1.6rem',
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            aria-label="Toggle Sidebar"
+          >
+            ☰
+          </button>
+          <img src="/eyiwunmi_images/logo.png" alt="Logo" style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid var(--gold)' }} />
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: '700', fontSize: '1.1rem' }}>Eyiwunmi <span style={{ color: 'var(--gold)' }}>✦</span></span>
+        </div>
+        <button
+          onClick={handleLogout}
+          style={{
+            background: 'transparent',
+            border: '1px solid rgba(255,255,255,0.2)',
+            color: 'rgba(255,255,255,0.6)',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '0.75rem'
+          }}
+        >
+          Sign Out
+        </button>
+      </div>
+
+      {/* SIDEBAR OVERLAY */}
+      {isSidebarOpen && (
+        <div
+          className="admin-sidebar-overlay"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="admin-brand-header">
           <img src="/eyiwunmi_images/logo.png" alt="Logo" className="admin-brand-logo" />
           <span className="admin-brand-name">Eyiwunmi <span>✦</span></span>
         </div>
         <ul className="admin-menu-list">
           <li className={`admin-menu-item ${activeTab === 'dashboard' ? 'active' : ''}`}>
-            <button onClick={() => setActiveTab('dashboard')}>
+            <button onClick={() => { setActiveTab('dashboard'); setIsSidebarOpen(false); }}>
               <span className="icon">📊</span>
               <span>Dashboard</span>
             </button>
           </li>
           <li className={`admin-menu-item ${activeTab === 'outfits' ? 'active' : ''}`}>
-            <button onClick={() => setActiveTab('outfits')}>
+            <button onClick={() => { setActiveTab('outfits'); setIsSidebarOpen(false); }}>
               <span className="icon">👗</span>
               <span>Outfits Manager</span>
             </button>
           </li>
           <li className={`admin-menu-item ${activeTab === 'inbox' ? 'active' : ''}`}>
-            <button onClick={() => setActiveTab('inbox')}>
+            <button onClick={() => { setActiveTab('inbox'); setIsSidebarOpen(false); }}>
               <span className="icon">📬</span>
               <span>Inbox ({inboxCount})</span>
             </button>
           </li>
           <li className={`admin-menu-item ${activeTab === 'measurements' ? 'active' : ''}`}>
-            <button onClick={() => setActiveTab('measurements')}>
+            <button onClick={() => { setActiveTab('measurements'); setIsSidebarOpen(false); }}>
               <span className="icon">📐</span>
               <span>Measurements</span>
             </button>
           </li>
           <li className={`admin-menu-item ${activeTab === 'analytics' ? 'active' : ''}`}>
-            <button onClick={() => setActiveTab('analytics')}>
+            <button onClick={() => { setActiveTab('analytics'); setIsSidebarOpen(false); }}>
               <span className="icon">📈</span>
               <span>Analytics</span>
             </button>
           </li>
           <li className={`admin-menu-item ${activeTab === 'settings' ? 'active' : ''}`}>
-            <button onClick={() => setActiveTab('settings')}>
+            <button onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }}>
               <span className="icon">⚙️</span>
               <span>Settings</span>
             </button>
@@ -917,7 +965,7 @@ export default function Admin() {
               Modify the authentication passcode required to access this dashboard.
             </p>
             <form onSubmit={handleSettingsSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+              <div className="admin-form-grid" style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Current Passcode</label>
                   <input
@@ -974,7 +1022,7 @@ export default function Admin() {
             </header>
 
             <form onSubmit={saveOutfit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="admin-form-grid">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Outfit Name</label>
                   <input
