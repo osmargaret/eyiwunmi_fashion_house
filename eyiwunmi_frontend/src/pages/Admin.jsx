@@ -9,6 +9,8 @@ export default function Admin() {
   // Dashboard state
   const [activeTab, setActiveTab] = useState('dashboard');
   const [outfits, setOutfits] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [enquiries, setEnquiries] = useState([]);
   const [measurements, setMeasurements] = useState([]);
   const [analytics, setAnalytics] = useState({
@@ -537,68 +539,146 @@ export default function Admin() {
         )}
 
         {/* TAB 2: OUTFITS MANAGER */}
-        {activeTab === 'outfits' && (
-          <div className="admin-table-container">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Img</th>
-                  <th>Name</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Fabric</th>
-                  <th>Badge</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {outfits.map((item) => {
-                  const imgUrl = item.image.startsWith('http') || item.image.startsWith('data:')
-                    ? item.image
-                    : `/${item.image}`;
-                  return (
-                    <tr key={item.id}>
-                      <td>
-                        <img
-                          src={imgUrl}
-                          className="admin-img-cell"
-                          alt={item.name}
-                          onError={(e) => {
-                            e.target.src = '/eyiwunmi_images/logo.png';
-                          }}
-                        />
-                      </td>
-                      <td style={{ fontWeight: 600, color: 'var(--gold-light)' }}>{item.name}</td>
-                      <td style={{ textTransform: 'capitalize' }}>{item.category}</td>
-                      <td style={{ fontWeight: 700 }}>{item.price}</td>
-                      <td>{item.fabric || '-'}</td>
-                      <td>
-                        <span className={`admin-badge-span ${item.badge || 'none'}`}>
-                          {item.badgeText || 'None'}
-                        </span>
-                      </td>
-                      <td>
-                        <button className="admin-btn-action edit" onClick={() => openEditOutfit(item)}>
-                          ✏️ Edit
-                        </button>
-                        <button className="admin-btn-action delete" onClick={() => deleteOutfit(item.id)}>
-                          🗑️ Delete
-                        </button>
+        {activeTab === 'outfits' && (() => {
+          const totalPages = Math.ceil(outfits.length / itemsPerPage);
+          const validCurrentPage = Math.min(currentPage, Math.max(1, totalPages));
+          const startIndex = (validCurrentPage - 1) * itemsPerPage;
+          const paginatedOutfits = outfits.slice(startIndex, startIndex + itemsPerPage);
+
+          return (
+            <div className="admin-table-container">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Img</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Fabric</th>
+                    <th>Badge</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedOutfits.map((item) => {
+                    const imgUrl = item.image.startsWith('http') || item.image.startsWith('data:')
+                      ? item.image
+                      : `/${item.image}`;
+                    return (
+                      <tr key={item.id}>
+                        <td>
+                          <img
+                            src={imgUrl}
+                            className="admin-img-cell"
+                            alt={item.name}
+                            onError={(e) => {
+                              e.target.src = '/eyiwunmi_images/logo.png';
+                            }}
+                          />
+                        </td>
+                        <td style={{ fontWeight: 600, color: 'var(--gold-light)' }}>{item.name}</td>
+                        <td style={{ textTransform: 'capitalize' }}>{item.category}</td>
+                        <td style={{ fontWeight: 700 }}>{item.price}</td>
+                        <td>{item.fabric || '-'}</td>
+                        <td>
+                          <span className={`admin-badge-span ${item.badge || 'none'}`}>
+                            {item.badgeText || 'None'}
+                          </span>
+                        </td>
+                        <td>
+                          <button className="admin-btn-action edit" onClick={() => openEditOutfit(item)}>
+                            ✏️ Edit
+                          </button>
+                          <button className="admin-btn-action delete" onClick={() => deleteOutfit(item.id)}>
+                            🗑️ Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {outfits.length === 0 && (
+                    <tr>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.4)' }}>
+                        No outfits in database.
                       </td>
                     </tr>
-                  );
-                })}
-                {outfits.length === 0 && (
-                  <tr>
-                    <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.4)' }}>
-                      No outfits in database.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  )}
+                </tbody>
+              </table>
+              {totalPages > 1 && (
+                <div className="admin-pagination" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '16px 24px',
+                  background: 'rgba(0, 0, 0, 0.2)',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                  borderBottomLeftRadius: '12px',
+                  borderBottomRightRadius: '12px',
+                  gap: '12px',
+                  flexWrap: 'wrap'
+                }}>
+                  <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.6)' }}>
+                    Showing <strong style={{ color: 'var(--gold-light)' }}>{startIndex + 1}</strong> to <strong style={{ color: 'var(--gold-light)' }}>{Math.min(startIndex + itemsPerPage, outfits.length)}</strong> of <strong style={{ color: 'var(--gold-light)' }}>{outfits.length}</strong> outfits
+                  </span>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={validCurrentPage === 1}
+                      style={{
+                        background: validCurrentPage === 1 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
+                        color: validCurrentPage === 1 ? 'rgba(255,255,255,0.3)' : 'white',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        cursor: validCurrentPage === 1 ? 'not-allowed' : 'pointer',
+                        fontSize: '0.85rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      ◀ Prev
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        style={{
+                          background: pageNum === validCurrentPage ? 'linear-gradient(135deg, var(--gold), var(--gold-light))' : 'rgba(255,255,255,0.1)',
+                          color: pageNum === validCurrentPage ? 'var(--purple-950)' : 'white',
+                          border: pageNum === validCurrentPage ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: pageNum === validCurrentPage ? 700 : 500,
+                          fontSize: '0.85rem',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={validCurrentPage === totalPages}
+                      style={{
+                        background: validCurrentPage === totalPages ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
+                        color: validCurrentPage === totalPages ? 'rgba(255,255,255,0.3)' : 'white',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        cursor: validCurrentPage === totalPages ? 'not-allowed' : 'pointer',
+                        fontSize: '0.85rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      Next ▶
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* TAB 3: INBOX */}
         {activeTab === 'inbox' && (
@@ -670,154 +750,131 @@ export default function Admin() {
 
         {/* TAB 4: MEASUREMENTS */}
         {activeTab === 'measurements' && (
-          <div className="admin-table-container">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Client</th>
-                  <th>Contact</th>
-                  <th>Shoulder/Chest</th>
-                  <th>Waist/Hips</th>
-                  <th>Sleeve/Length</th>
-                  <th>Submitted</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {measurements.map((item) => (
-                  <tr key={item.id}>
-                    <td style={{ fontWeight: 600, color: 'var(--gold-light)' }}>{item.name}</td>
-                    <td>
-                      <div>📧 {item.email}</div>
-                      <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>📞 {item.phone}</div>
-                    </td>
-                    <td>
-                      <div>Sh: {item.shoulder || '-'} "</div>
-                      <div>Ch: {item.chest || '-'} "</div>
-                    </td>
-                    <td>
-                      <div>Waist: {item.waist || '-'} "</div>
-                      <div>Hips: {item.hips || '-'} "</div>
-                    </td>
-                    <td>
-                      <div>Sl: {item.sleeve || '-'} "</div>
-                      <div>Ln: {item.length || '-'} "</div>
-                    </td>
-                    <td style={{ fontSize: '0.8rem', opacity: 0.75 }}>
-                      {new Date(item.submittedAt).toLocaleDateString()}
-                    </td>
-                    <td>
-                      <button
-                        className="admin-btn-action edit"
-                        style={{ background: 'rgba(167, 139, 250, 0.15)', color: 'var(--purple-500)', borderColor: 'rgba(167, 139, 250, 0.3)' }}
-                        onClick={() => setViewingNotes(item)}
-                      >
-                        👁 View Notes
-                      </button>
-                      <button className="admin-btn-action delete" onClick={() => deleteMeasurement(item.id)}>
-                        🗑️ Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {measurements.length === 0 && (
-                  <tr>
-                    <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.4)' }}>
-                      No client measurement sheets found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          <div style={{
+            background: 'rgba(28, 16, 38, 0.4)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '60px 40px',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '20px',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+          }}>
+            <div style={{
+              fontSize: '4rem',
+              lineHeight: 1,
+              animation: 'float 3s ease-in-out infinite',
+              filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.3))'
+            }}>
+              📐
+            </div>
+            <h2 style={{
+              fontFamily: 'var(--font-display)',
+              color: 'var(--gold-light)',
+              fontSize: '2rem',
+              letterSpacing: '1px',
+              margin: 0
+            }}>
+              Measurements Portal
+            </h2>
+            <div style={{
+              height: '2px',
+              width: '60px',
+              background: 'linear-gradient(90deg, transparent, var(--gold), transparent)'
+            }}></div>
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: '1rem',
+              maxWidth: '480px',
+              lineHeight: 1.6,
+              margin: 0
+            }}>
+              Our bespoke customer measurement vault and profiling suite is currently undergoing upgrade. Standardized fit automation tools and secure size profiles will be available soon.
+            </p>
+            <span style={{
+              background: 'rgba(212, 175, 55, 0.1)',
+              color: 'var(--gold-light)',
+              border: '1px solid rgba(212, 175, 55, 0.3)',
+              padding: '6px 16px',
+              borderRadius: '20px',
+              fontSize: '0.85rem',
+              fontWeight: '600',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              marginTop: '10px',
+              boxShadow: '0 0 15px rgba(212, 175, 55, 0.1)'
+            }}>
+              Coming Soon
+            </span>
           </div>
         )}
 
         {/* TAB 5: ANALYTICS */}
         {activeTab === 'analytics' && (
-          <div>
-            <div className="admin-stats-grid">
-              <div className="admin-stat-card">
-                <div className="info">
-                  <h3>Page Views</h3>
-                  <div className="number">{analytics.totalPageViews}</div>
-                </div>
-                <div className="icon-box">👁</div>
-              </div>
-              <div className="admin-stat-card">
-                <div className="info">
-                  <h3>Top Outfit Views</h3>
-                  <div className="number">
-                    {analytics.topOutfits.reduce((a, b) => a + b.views, 0)}
-                  </div>
-                </div>
-                <div className="icon-box">👗</div>
-              </div>
-              <div className="admin-stat-card">
-                <div className="info">
-                  <h3>Cart Additions</h3>
-                  <div className="number">{analytics.totalCartAdds}</div>
-                </div>
-                <div className="icon-box">🛒</div>
-              </div>
-              <div className="admin-stat-card">
-                <div className="info">
-                  <h3>WhatsApp Checkouts</h3>
-                  <div className="number">{analytics.totalCheckouts}</div>
-                </div>
-                <div className="icon-box">💬</div>
-              </div>
+          <div style={{
+            background: 'rgba(28, 16, 38, 0.4)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '16px',
+            padding: '60px 40px',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '20px',
+            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+          }}>
+            <div style={{
+              fontSize: '4rem',
+              lineHeight: 1,
+              animation: 'float 3s ease-in-out infinite',
+              filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.3))'
+            }}>
+              📈
             </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-              {/* Top outfits views */}
-              <div style={{ background: 'var(--purple-900)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <h3 style={{ color: 'var(--gold)', marginBottom: '16px', fontFamily: 'var(--font-display)' }}>
-                  🔥 Most Viewed Outfits
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {analytics.topOutfits.map((item, idx) => (
-                    <div key={item.id} style={{ display: 'flex', justify: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '6px' }}>
-                      <span>{idx + 1}. {item.name}</span>
-                      <strong style={{ color: 'var(--gold)' }}>{item.views} views</strong>
-                    </div>
-                  ))}
-                  {analytics.topOutfits.length === 0 && <p style={{ color: 'rgba(255,255,255,0.4)' }}>No views logged yet.</p>}
-                </div>
-              </div>
-
-              {/* Daily traffic */}
-              <div style={{ background: 'var(--purple-900)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <h3 style={{ color: 'var(--gold)', marginBottom: '16px', fontFamily: 'var(--font-display)' }}>
-                  📅 Daily Traffic
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {analytics.dailyViews.slice(-7).map((item) => (
-                    <div key={item.date} style={{ display: 'flex', justify: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '6px' }}>
-                      <span>{item.date}</span>
-                      <strong>{item.views} visits</strong>
-                    </div>
-                  ))}
-                  {analytics.dailyViews.length === 0 && <p style={{ color: 'rgba(255,255,255,0.4)' }}>No visitors logged yet.</p>}
-                </div>
-              </div>
-            </div>
-
-            {/* Event logs */}
-            <div style={{ background: 'var(--purple-900)', borderRadius: '16px', padding: '24px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <h3 style={{ color: 'var(--gold)', marginBottom: '16px', fontFamily: 'var(--font-display)' }}>
-                📜 Recent Activity Feed
-              </h3>
-              <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {analytics.recentEvents.map((evt, idx) => (
-                  <div key={idx} style={{ fontSize: '0.85rem', padding: '6px 12px', borderLeft: '3px solid var(--purple-500)', background: 'rgba(0,0,0,0.1)' }}>
-                    <span style={{ color: 'var(--gold-light)' }}>[{new Date(evt.timestamp).toLocaleTimeString()}]</span>{' '}
-                    <strong>{evt.type.replace('_', ' ').toUpperCase()}</strong>:{' '}
-                    <span style={{ opacity: 0.85 }}>{JSON.stringify(evt.data)}</span>
-                  </div>
-                ))}
-                {analytics.recentEvents.length === 0 && <p style={{ color: 'rgba(255,255,255,0.4)' }}>No events logged.</p>}
-              </div>
-            </div>
+            <h2 style={{
+              fontFamily: 'var(--font-display)',
+              color: 'var(--gold-light)',
+              fontSize: '2rem',
+              letterSpacing: '1px',
+              margin: 0
+            }}>
+              Business Intelligence & Analytics
+            </h2>
+            <div style={{
+              height: '2px',
+              width: '60px',
+              background: 'linear-gradient(90deg, transparent, var(--gold), transparent)'
+            }}></div>
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: '1rem',
+              maxWidth: '480px',
+              lineHeight: 1.6,
+              margin: 0
+            }}>
+              Real-time site traffic analytics, conversion reports, and interactive outfit interest heatmaps are under active development to optimize inventory intelligence.
+            </p>
+            <span style={{
+              background: 'rgba(212, 175, 55, 0.1)',
+              color: 'var(--gold-light)',
+              border: '1px solid rgba(212, 175, 55, 0.3)',
+              padding: '6px 16px',
+              borderRadius: '20px',
+              fontSize: '0.85rem',
+              fontWeight: '600',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              marginTop: '10px',
+              boxShadow: '0 0 15px rgba(212, 175, 55, 0.1)'
+            }}>
+              Coming Soon
+            </span>
           </div>
         )}
 
