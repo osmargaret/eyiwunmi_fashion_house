@@ -11,6 +11,7 @@ export default function Admin() {
   const [outfits, setOutfits] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [searchTerm, setSearchTerm] = useState('');
   const [enquiries, setEnquiries] = useState([]);
   const [measurements, setMeasurements] = useState([]);
   const [analytics, setAnalytics] = useState({
@@ -466,9 +467,33 @@ export default function Admin() {
             {activeTab === 'dashboard' ? 'Overview' : activeTab === 'outfits' ? 'Inventory' : activeTab}
           </h1>
           {activeTab === 'outfits' && (
-            <button className="btn-admin-primary" onClick={openAddOutfit}>
-              ➕ Add Outfit
-            </button>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <input
+                type="text"
+                placeholder="🔍 Search name or price..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '8px',
+                  padding: '10px 16px',
+                  color: 'white',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                  minWidth: '240px',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={(e) => e.target.style.borderColor = 'var(--gold)'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
+              />
+              <button className="btn-admin-primary" onClick={openAddOutfit}>
+                ➕ Add Outfit
+              </button>
+            </div>
           )}
         </header>
 
@@ -540,10 +565,14 @@ export default function Admin() {
 
         {/* TAB 2: OUTFITS MANAGER */}
         {activeTab === 'outfits' && (() => {
-          const totalPages = Math.ceil(outfits.length / itemsPerPage);
+          const filteredOutfits = outfits.filter(o => 
+            o.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (o.price && o.price.toLowerCase().includes(searchTerm.toLowerCase()))
+          );
+          const totalPages = Math.ceil(filteredOutfits.length / itemsPerPage);
           const validCurrentPage = Math.min(currentPage, Math.max(1, totalPages));
           const startIndex = (validCurrentPage - 1) * itemsPerPage;
-          const paginatedOutfits = outfits.slice(startIndex, startIndex + itemsPerPage);
+          const paginatedOutfits = filteredOutfits.slice(startIndex, startIndex + itemsPerPage);
 
           return (
             <div className="admin-table-container">
@@ -596,10 +625,10 @@ export default function Admin() {
                       </tr>
                     );
                   })}
-                  {outfits.length === 0 && (
+                  {filteredOutfits.length === 0 && (
                     <tr>
                       <td colSpan="7" style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.4)' }}>
-                        No outfits in database.
+                        No matching outfits found.
                       </td>
                     </tr>
                   )}
@@ -619,7 +648,7 @@ export default function Admin() {
                   flexWrap: 'wrap'
                 }}>
                   <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-                    Showing <strong style={{ color: 'var(--gold-light)' }}>{startIndex + 1}</strong> to <strong style={{ color: 'var(--gold-light)' }}>{Math.min(startIndex + itemsPerPage, outfits.length)}</strong> of <strong style={{ color: 'var(--gold-light)' }}>{outfits.length}</strong> outfits
+                    Showing <strong style={{ color: 'var(--gold-light)' }}>{filteredOutfits.length > 0 ? startIndex + 1 : 0}</strong> to <strong style={{ color: 'var(--gold-light)' }}>{Math.min(startIndex + itemsPerPage, filteredOutfits.length)}</strong> of <strong style={{ color: 'var(--gold-light)' }}>{filteredOutfits.length}</strong> outfits
                   </span>
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <button
